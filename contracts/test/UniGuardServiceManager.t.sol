@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.12;
 
-import {HelloWorldServiceManager} from "../src/HelloWorldServiceManager.sol";
+import {UniGuardServiceManager} from "../src/UniGuardServiceManager.sol";
 import {MockAVSDeployer} from "@eigenlayer-middleware/test/utils/MockAVSDeployer.sol";
 import {ECDSAStakeRegistry} from "@eigenlayer-middleware/src/unaudited/ECDSAStakeRegistry.sol";
 import {Vm} from "forge-std/Vm.sol";
@@ -23,11 +23,11 @@ import {ISignatureUtils} from "@eigenlayer/contracts/interfaces/ISignatureUtils.
 import {AVSDirectory} from "@eigenlayer/contracts/core/AVSDirectory.sol";
 import {IAVSDirectory} from "@eigenlayer/contracts/interfaces/IAVSDirectory.sol";
 import {Test, console2 as console} from "forge-std/Test.sol";
-import {IHelloWorldServiceManager} from "../src/IHelloWorldServiceManager.sol";
+import {IUniGuardServiceManager} from "../src/IUniGuardServiceManager.sol";
 import {ECDSAUpgradeable} from
     "@openzeppelin-upgrades/contracts/utils/cryptography/ECDSAUpgradeable.sol";
 
-contract HelloWorldTaskManagerSetup is Test {
+contract UniGuardServiceManagerSetup is Test {
     Quorum internal quorum;
 
     struct Operator {
@@ -95,7 +95,7 @@ contract HelloWorldTaskManagerSetup is Test {
         vm.label(coreDeployment.pauserRegistry, "PauserRegistry");
         vm.label(coreDeployment.strategyFactory, "StrategyFactory");
         vm.label(coreDeployment.strategyBeacon, "StrategyBeacon");
-        vm.label(helloWorldDeployment.helloWorldServiceManager, "HelloWorldServiceManager");
+        vm.label(helloWorldDeployment.helloWorldServiceManager, "UniGuardServiceManager");
         vm.label(helloWorldDeployment.stakeRegistry, "StakeRegistry");
     }
 
@@ -242,8 +242,8 @@ contract HelloWorldTaskManagerSetup is Test {
     }
 
     function createTask(TrafficGenerator memory generator, string memory taskName) internal {
-        IHelloWorldServiceManager helloWorldServiceManager =
-            IHelloWorldServiceManager(helloWorldDeployment.helloWorldServiceManager);
+        IUniGuardServiceManager helloWorldServiceManager =
+            IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager);
 
         vm.prank(generator.key.addr);
         helloWorldServiceManager.createNewTask(taskName);
@@ -251,7 +251,7 @@ contract HelloWorldTaskManagerSetup is Test {
 
     function respondToTask(
         Operator memory operator,
-        IHelloWorldServiceManager.Task memory task,
+        IUniGuardServiceManager.Task memory task,
         uint32 referenceTaskIndex
     ) internal {
         // Create the message hash
@@ -266,13 +266,13 @@ contract HelloWorldTaskManagerSetup is Test {
 
         bytes memory signedTask = abi.encode(operators, signatures, uint32(block.number));
 
-        IHelloWorldServiceManager(helloWorldDeployment.helloWorldServiceManager).respondToTask(
+        IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager).respondToTask(
             task, referenceTaskIndex, signedTask
         );
     }
 }
 
-contract HelloWorldServiceManagerInitialization is HelloWorldTaskManagerSetup {
+contract UniGuardServiceManagerInitialization is UniGuardServiceManagerSetup {
     function testInitialization() public view {
         ECDSAStakeRegistry stakeRegistry = ECDSAStakeRegistry(helloWorldDeployment.stakeRegistry);
 
@@ -288,7 +288,7 @@ contract HelloWorldServiceManagerInitialization is HelloWorldTaskManagerSetup {
         assertTrue(helloWorldDeployment.stakeRegistry != address(0), "StakeRegistry not deployed");
         assertTrue(
             helloWorldDeployment.helloWorldServiceManager != address(0),
-            "HelloWorldServiceManager not deployed"
+            "UniGuardServiceManager not deployed"
         );
         assertTrue(coreDeployment.delegationManager != address(0), "DelegationManager not deployed");
         assertTrue(coreDeployment.avsDirectory != address(0), "AVSDirectory not deployed");
@@ -299,14 +299,14 @@ contract HelloWorldServiceManagerInitialization is HelloWorldTaskManagerSetup {
     }
 }
 
-contract RegisterOperator is HelloWorldTaskManagerSetup {
+contract RegisterOperator is UniGuardServiceManagerSetup {
     uint256 internal constant INITIAL_BALANCE = 100 ether;
     uint256 internal constant DEPOSIT_AMOUNT = 1 ether;
     uint256 internal constant OPERATOR_COUNT = 4;
 
     IDelegationManager internal delegationManager;
     AVSDirectory internal avsDirectory;
-    IHelloWorldServiceManager internal sm;
+    IUniGuardServiceManager internal sm;
     ECDSAStakeRegistry internal stakeRegistry;
 
     function setUp() public virtual override {
@@ -314,7 +314,7 @@ contract RegisterOperator is HelloWorldTaskManagerSetup {
         /// Setting to internal state for convenience
         delegationManager = IDelegationManager(coreDeployment.delegationManager);
         avsDirectory = AVSDirectory(coreDeployment.avsDirectory);
-        sm = IHelloWorldServiceManager(helloWorldDeployment.helloWorldServiceManager);
+        sm = IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager);
         stakeRegistry = ECDSAStakeRegistry(helloWorldDeployment.stakeRegistry);
 
         addStrategy(address(mockToken));
@@ -361,23 +361,23 @@ contract RegisterOperator is HelloWorldTaskManagerSetup {
     }
 }
 
-contract CreateTask is HelloWorldTaskManagerSetup {
-    IHelloWorldServiceManager internal sm;
+contract CreateTask is UniGuardServiceManagerSetup {
+    IUniGuardServiceManager internal sm;
 
     function setUp() public override {
         super.setUp();
-        sm = IHelloWorldServiceManager(helloWorldDeployment.helloWorldServiceManager);
+        sm = IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager);
     }
 
     function testCreateTask() public {
         string memory taskName = "Test Task";
 
         vm.prank(generator.key.addr);
-        IHelloWorldServiceManager.Task memory newTask = sm.createNewTask(taskName);
+        IUniGuardServiceManager.Task memory newTask = sm.createNewTask(taskName);
     }
 }
 
-contract RespondToTask is HelloWorldTaskManagerSetup {
+contract RespondToTask is UniGuardServiceManagerSetup {
     using ECDSAUpgradeable for bytes32;
 
     uint256 internal constant INITIAL_BALANCE = 100 ether;
@@ -386,7 +386,7 @@ contract RespondToTask is HelloWorldTaskManagerSetup {
 
     IDelegationManager internal delegationManager;
     AVSDirectory internal avsDirectory;
-    IHelloWorldServiceManager internal sm;
+    IUniGuardServiceManager internal sm;
     ECDSAStakeRegistry internal stakeRegistry;
 
     function setUp() public override {
@@ -394,7 +394,7 @@ contract RespondToTask is HelloWorldTaskManagerSetup {
 
         delegationManager = IDelegationManager(coreDeployment.delegationManager);
         avsDirectory = AVSDirectory(coreDeployment.avsDirectory);
-        sm = IHelloWorldServiceManager(helloWorldDeployment.helloWorldServiceManager);
+        sm = IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager);
         stakeRegistry = ECDSAStakeRegistry(helloWorldDeployment.stakeRegistry);
 
         addStrategy(address(mockToken));
@@ -416,7 +416,7 @@ contract RespondToTask is HelloWorldTaskManagerSetup {
 
     function testRespondToTask() public {
         string memory taskName = "TestTask";
-        IHelloWorldServiceManager.Task memory newTask = sm.createNewTask(taskName);
+        IUniGuardServiceManager.Task memory newTask = sm.createNewTask(taskName);
         uint32 taskIndex = sm.latestTaskNum() - 1;
 
         bytes32 messageHash = keccak256(abi.encodePacked("Hello, ", taskName));

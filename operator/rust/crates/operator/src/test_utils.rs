@@ -18,7 +18,7 @@ use eigen_utils::{get_provider, get_signer};
 use eyre::Result;
 use hello_world_utils::{
     ecdsastakeregistry::ISignatureUtils::SignatureWithSaltAndExpiry,
-    helloworldservicemanager::{HelloWorldServiceManager, IHelloWorldServiceManager::Task},
+    uniguardservicemanager::{UniGuardServiceManager, IUniGuardServiceManager::Task},
     parse_avs_directory_address, parse_delegation_manager_address,
     parse_hello_world_service_manager, parse_stake_registry_address, EigenLayerData,
     HelloWorldData,
@@ -63,7 +63,7 @@ async fn sign_and_response_to_task(
 
     let hello_world_contract_address: Address =
         parse_hello_world_service_manager("contracts/deployments/hello-world/31337.json")?;
-    let hello_world_contract = HelloWorldServiceManager::new(hello_world_contract_address, &pr);
+    let hello_world_contract = UniGuardServiceManager::new(hello_world_contract_address, &pr);
 
     let response_hash = hello_world_contract
         .respondToTask(
@@ -105,8 +105,8 @@ async fn monitor_new_tasks() -> Result<()> {
 
         for log in logs {
             match log.topic0() {
-                Some(&HelloWorldServiceManager::NewTaskCreated::SIGNATURE_HASH) => {
-                    let HelloWorldServiceManager::NewTaskCreated { taskIndex, task } = log
+                Some(&UniGuardServiceManager::NewTaskCreated::SIGNATURE_HASH) => {
+                    let UniGuardServiceManager::NewTaskCreated { taskIndex, task } = log
                         .log_decode()
                         .expect("Failed to decode log new task created")
                         .inner
@@ -273,7 +273,7 @@ async fn create_new_task(task_name: &str) -> Result<()> {
         .with_recommended_fillers()
         .wallet(wallet)
         .on_http(Url::from_str(&ANVIL_RPC_URL)?);
-    let hello_world_contract = HelloWorldServiceManager::new(hello_world_contract_address, pr);
+    let hello_world_contract = UniGuardServiceManager::new(hello_world_contract_address, pr);
 
     let tx = hello_world_contract
         .createNewTask(task_name.to_string())
@@ -313,7 +313,7 @@ mod tests {
     use eigen_utils::delegationmanager::DelegationManager::{self, isOperatorReturn};
     use serial_test::serial;
     use std::path::Path;
-    use HelloWorldServiceManager::latestTaskNumReturn;
+    use UniGuardServiceManager::latestTaskNumReturn;
     #[tokio::test]
     #[serial]
     async fn test_register_operator() {
@@ -380,7 +380,7 @@ mod tests {
             .unwrap();
         let provider = &get_provider(&ANVIL_RPC_URL);
         let hello_world_contract =
-            HelloWorldServiceManager::new(hello_world_contract_address, provider);
+            UniGuardServiceManager::new(hello_world_contract_address, provider);
 
         let latest_task_num = hello_world_contract.latestTaskNum().call().await.unwrap();
 

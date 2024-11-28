@@ -2,12 +2,12 @@
 /**
 
 ```solidity
-library IHelloWorldServiceManager {
+library IUniGuardServiceManager {
     struct Task { string name; uint32 taskCreatedBlock; }
 }
 ```*/
 #[allow(non_camel_case_types, non_snake_case, clippy::style)]
-pub mod IHelloWorldServiceManager {
+pub mod IUniGuardServiceManager {
     use super::*;
     use alloy::sol_types as alloy_sol_types;
     /**```solidity
@@ -198,9 +198,9 @@ pub mod IHelloWorldServiceManager {
         }
     };
     use alloy::contract as alloy_contract;
-    /**Creates a new wrapper around an on-chain [`IHelloWorldServiceManager`](self) contract instance.
+    /**Creates a new wrapper around an on-chain [`IUniGuardServiceManager`](self) contract instance.
 
-    See the [wrapper's documentation](`IHelloWorldServiceManagerInstance`) for more details.*/
+    See the [wrapper's documentation](`IUniGuardServiceManagerInstance`) for more details.*/
     #[inline]
     pub const fn new<
         T: alloy_contract::private::Transport + ::core::clone::Clone,
@@ -209,13 +209,13 @@ pub mod IHelloWorldServiceManager {
     >(
         address: alloy_sol_types::private::Address,
         provider: P,
-    ) -> IHelloWorldServiceManagerInstance<T, P, N> {
-        IHelloWorldServiceManagerInstance::<T, P, N>::new(address, provider)
+    ) -> IUniGuardServiceManagerInstance<T, P, N> {
+        IUniGuardServiceManagerInstance::<T, P, N>::new(address, provider)
     }
-    /**A [`IHelloWorldServiceManager`](self) instance.
+    /**A [`IUniGuardServiceManager`](self) instance.
 
     Contains type-safe methods for interacting with an on-chain instance of the
-    [`IHelloWorldServiceManager`](self) contract located at a given `address`, using a given
+    [`IUniGuardServiceManager`](self) contract located at a given `address`, using a given
     provider `P`.
 
     If the contract bytecode is available (see the [`sol!`](alloy_sol_types::sol!)
@@ -224,16 +224,16 @@ pub mod IHelloWorldServiceManager {
 
     See the [module-level documentation](self) for all the available methods.*/
     #[derive(Clone)]
-    pub struct IHelloWorldServiceManagerInstance<T, P, N = alloy_contract::private::Ethereum> {
+    pub struct IUniGuardServiceManagerInstance<T, P, N = alloy_contract::private::Ethereum> {
         address: alloy_sol_types::private::Address,
         provider: P,
         _network_transport: ::core::marker::PhantomData<(N, T)>,
     }
     #[automatically_derived]
-    impl<T, P, N> ::core::fmt::Debug for IHelloWorldServiceManagerInstance<T, P, N> {
+    impl<T, P, N> ::core::fmt::Debug for IUniGuardServiceManagerInstance<T, P, N> {
         #[inline]
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-            f.debug_tuple("IHelloWorldServiceManagerInstance")
+            f.debug_tuple("IUniGuardServiceManagerInstance")
                 .field(&self.address)
                 .finish()
         }
@@ -244,11 +244,11 @@ pub mod IHelloWorldServiceManager {
             T: alloy_contract::private::Transport + ::core::clone::Clone,
             P: alloy_contract::private::Provider<T, N>,
             N: alloy_contract::private::Network,
-        > IHelloWorldServiceManagerInstance<T, P, N>
+        > IUniGuardServiceManagerInstance<T, P, N>
     {
-        /**Creates a new wrapper around an on-chain [`IHelloWorldServiceManager`](self) contract instance.
+        /**Creates a new wrapper around an on-chain [`IUniGuardServiceManager`](self) contract instance.
 
-        See the [wrapper's documentation](`IHelloWorldServiceManagerInstance`) for more details.*/
+        See the [wrapper's documentation](`IUniGuardServiceManagerInstance`) for more details.*/
         #[inline]
         pub const fn new(address: alloy_sol_types::private::Address, provider: P) -> Self {
             Self {
@@ -278,11 +278,11 @@ pub mod IHelloWorldServiceManager {
             &self.provider
         }
     }
-    impl<T, P: ::core::clone::Clone, N> IHelloWorldServiceManagerInstance<T, &P, N> {
+    impl<T, P: ::core::clone::Clone, N> IUniGuardServiceManagerInstance<T, &P, N> {
         /// Clones the provider and returns a new instance with the cloned provider.
         #[inline]
-        pub fn with_cloned_provider(self) -> IHelloWorldServiceManagerInstance<T, P, N> {
-            IHelloWorldServiceManagerInstance {
+        pub fn with_cloned_provider(self) -> IUniGuardServiceManagerInstance<T, P, N> {
+            IUniGuardServiceManagerInstance {
                 address: self.address,
                 provider: ::core::clone::Clone::clone(&self.provider),
                 _network_transport: ::core::marker::PhantomData,
@@ -295,7 +295,7 @@ pub mod IHelloWorldServiceManager {
             T: alloy_contract::private::Transport + ::core::clone::Clone,
             P: alloy_contract::private::Provider<T, N>,
             N: alloy_contract::private::Network,
-        > IHelloWorldServiceManagerInstance<T, P, N>
+        > IUniGuardServiceManagerInstance<T, P, N>
     {
         /// Creates a new call builder using this contract instance's provider and address.
         ///
@@ -314,7 +314,7 @@ pub mod IHelloWorldServiceManager {
             T: alloy_contract::private::Transport + ::core::clone::Clone,
             P: alloy_contract::private::Provider<T, N>,
             N: alloy_contract::private::Network,
-        > IHelloWorldServiceManagerInstance<T, P, N>
+        > IUniGuardServiceManagerInstance<T, P, N>
     {
         /// Creates a new event filter using this contract instance's provider and address.
         ///
@@ -1291,7 +1291,7 @@ pub mod ISignatureUtils {
 
 Generated by the following Solidity interface...
 ```solidity
-library IHelloWorldServiceManager {
+library IUniGuardServiceManager {
     struct Task {
         string name;
         uint32 taskCreatedBlock;
@@ -1320,12 +1320,12 @@ library ISignatureUtils {
     }
 }
 
-interface HelloWorldServiceManager {
+interface UniGuardServiceManager {
     event Initialized(uint8 version);
-    event NewTaskCreated(uint32 indexed taskIndex, IHelloWorldServiceManager.Task task);
+    event NewTaskCreated(uint32 indexed taskIndex, IUniGuardServiceManager.Task task);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event RewardsInitiatorUpdated(address prevRewardsInitiator, address newRewardsInitiator);
-    event TaskResponded(uint32 indexed taskIndex, IHelloWorldServiceManager.Task task, address operator);
+    event TaskResponded(uint32 indexed taskIndex, IUniGuardServiceManager.Task task, address operator);
 
     constructor(address _avsDirectory, address _stakeRegistry, address _delegationManager);
 
@@ -1333,7 +1333,7 @@ interface HelloWorldServiceManager {
     function allTaskResponses(address, uint32) external view returns (bytes memory);
     function avsDirectory() external view returns (address);
     function createAVSRewardsSubmission(IRewardsCoordinator.RewardsSubmission[] memory rewardsSubmissions) external;
-    function createNewTask(string memory name) external returns (IHelloWorldServiceManager.Task memory);
+    function createNewTask(string memory name) external returns (IUniGuardServiceManager.Task memory);
     function deregisterOperatorFromAVS(address operator) external;
     function getOperatorRestakedStrategies(address _operator) external view returns (address[] memory);
     function getRestakeableStrategies() external view returns (address[] memory);
@@ -1341,7 +1341,7 @@ interface HelloWorldServiceManager {
     function owner() external view returns (address);
     function registerOperatorToAVS(address operator, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) external;
     function renounceOwnership() external;
-    function respondToTask(IHelloWorldServiceManager.Task memory task, uint32 referenceTaskIndex, bytes memory signature) external;
+    function respondToTask(IUniGuardServiceManager.Task memory task, uint32 referenceTaskIndex, bytes memory signature) external;
     function rewardsInitiator() external view returns (address);
     function setRewardsInitiator(address newRewardsInitiator) external;
     function stakeRegistry() external view returns (address);
@@ -1496,7 +1496,7 @@ interface HelloWorldServiceManager {
       {
         "name": "",
         "type": "tuple",
-        "internalType": "struct IHelloWorldServiceManager.Task",
+        "internalType": "struct IUniGuardServiceManager.Task",
         "components": [
           {
             "name": "name",
@@ -1633,7 +1633,7 @@ interface HelloWorldServiceManager {
       {
         "name": "task",
         "type": "tuple",
-        "internalType": "struct IHelloWorldServiceManager.Task",
+        "internalType": "struct IUniGuardServiceManager.Task",
         "components": [
           {
             "name": "name",
@@ -1753,7 +1753,7 @@ interface HelloWorldServiceManager {
         "name": "task",
         "type": "tuple",
         "indexed": false,
-        "internalType": "struct IHelloWorldServiceManager.Task",
+        "internalType": "struct IUniGuardServiceManager.Task",
         "components": [
           {
             "name": "name",
@@ -1822,7 +1822,7 @@ interface HelloWorldServiceManager {
         "name": "task",
         "type": "tuple",
         "indexed": false,
-        "internalType": "struct IHelloWorldServiceManager.Task",
+        "internalType": "struct IUniGuardServiceManager.Task",
         "components": [
           {
             "name": "name",
@@ -1848,7 +1848,7 @@ interface HelloWorldServiceManager {
 ]
 ```*/
 #[allow(non_camel_case_types, non_snake_case, clippy::style)]
-pub mod HelloWorldServiceManager {
+pub mod UniGuardServiceManager {
     use super::*;
     use alloy::sol_types as alloy_sol_types;
     /// The creation / init bytecode of the contract.
@@ -1961,7 +1961,7 @@ pub mod HelloWorldServiceManager {
     };
     /**Event with signature `NewTaskCreated(uint32,(string,uint32))` and selector `0x58180a6a0403a63c2b5ce4b85d129d46a80d37851b2216bd0a98b59e7309b847`.
     ```solidity
-    event NewTaskCreated(uint32 indexed taskIndex, IHelloWorldServiceManager.Task task);
+    event NewTaskCreated(uint32 indexed taskIndex, IUniGuardServiceManager.Task task);
     ```*/
     #[allow(non_camel_case_types, non_snake_case, clippy::style)]
     #[derive(Clone)]
@@ -1969,14 +1969,14 @@ pub mod HelloWorldServiceManager {
         #[allow(missing_docs)]
         pub taskIndex: u32,
         #[allow(missing_docs)]
-        pub task: <IHelloWorldServiceManager::Task as alloy::sol_types::SolType>::RustType,
+        pub task: <IUniGuardServiceManager::Task as alloy::sol_types::SolType>::RustType,
     }
     #[allow(non_camel_case_types, non_snake_case, clippy::style)]
     const _: () = {
         use alloy::sol_types as alloy_sol_types;
         #[automatically_derived]
         impl alloy_sol_types::SolEvent for NewTaskCreated {
-            type DataTuple<'a> = (IHelloWorldServiceManager::Task,);
+            type DataTuple<'a> = (IUniGuardServiceManager::Task,);
             type DataToken<'a> = <Self::DataTuple<'a> as alloy_sol_types::SolType>::Token<'a>;
             type TopicList = (
                 alloy_sol_types::sol_data::FixedBytes<32>,
@@ -2017,7 +2017,7 @@ pub mod HelloWorldServiceManager {
             #[inline]
             fn tokenize_body(&self) -> Self::DataToken<'_> {
                 (
-                    <IHelloWorldServiceManager::Task as alloy_sol_types::SolType>::tokenize(
+                    <IUniGuardServiceManager::Task as alloy_sol_types::SolType>::tokenize(
                         &self.task,
                     ),
                 )
@@ -2262,7 +2262,7 @@ pub mod HelloWorldServiceManager {
     };
     /**Event with signature `TaskResponded(uint32,(string,uint32),address)` and selector `0x8eb2d2fcccf5801e10ff58cd73e8781ba923122963789378771f03c1148b023e`.
     ```solidity
-    event TaskResponded(uint32 indexed taskIndex, IHelloWorldServiceManager.Task task, address operator);
+    event TaskResponded(uint32 indexed taskIndex, IUniGuardServiceManager.Task task, address operator);
     ```*/
     #[allow(non_camel_case_types, non_snake_case, clippy::style)]
     #[derive(Clone)]
@@ -2270,7 +2270,7 @@ pub mod HelloWorldServiceManager {
         #[allow(missing_docs)]
         pub taskIndex: u32,
         #[allow(missing_docs)]
-        pub task: <IHelloWorldServiceManager::Task as alloy::sol_types::SolType>::RustType,
+        pub task: <IUniGuardServiceManager::Task as alloy::sol_types::SolType>::RustType,
         #[allow(missing_docs)]
         pub operator: alloy::sol_types::private::Address,
     }
@@ -2280,7 +2280,7 @@ pub mod HelloWorldServiceManager {
         #[automatically_derived]
         impl alloy_sol_types::SolEvent for TaskResponded {
             type DataTuple<'a> = (
-                IHelloWorldServiceManager::Task,
+                IUniGuardServiceManager::Task,
                 alloy::sol_types::sol_data::Address,
             );
             type DataToken<'a> = <Self::DataTuple<'a> as alloy_sol_types::SolType>::Token<'a>;
@@ -2324,7 +2324,7 @@ pub mod HelloWorldServiceManager {
             #[inline]
             fn tokenize_body(&self) -> Self::DataToken<'_> {
                 (
-                    <IHelloWorldServiceManager::Task as alloy_sol_types::SolType>::tokenize(
+                    <IUniGuardServiceManager::Task as alloy_sol_types::SolType>::tokenize(
                         &self.task,
                     ),
                     <alloy::sol_types::sol_data::Address as alloy_sol_types::SolType>::tokenize(
@@ -2918,7 +2918,7 @@ pub mod HelloWorldServiceManager {
     };
     /**Function with signature `createNewTask(string)` and selector `0x85edf874`.
     ```solidity
-    function createNewTask(string memory name) external returns (IHelloWorldServiceManager.Task memory);
+    function createNewTask(string memory name) external returns (IUniGuardServiceManager.Task memory);
     ```*/
     #[allow(non_camel_case_types, non_snake_case)]
     #[derive(Clone)]
@@ -2929,7 +2929,7 @@ pub mod HelloWorldServiceManager {
     #[allow(non_camel_case_types, non_snake_case)]
     #[derive(Clone)]
     pub struct createNewTaskReturn {
-        pub _0: <IHelloWorldServiceManager::Task as alloy::sol_types::SolType>::RustType,
+        pub _0: <IUniGuardServiceManager::Task as alloy::sol_types::SolType>::RustType,
     }
     #[allow(non_camel_case_types, non_snake_case, clippy::style)]
     const _: () = {
@@ -2965,10 +2965,10 @@ pub mod HelloWorldServiceManager {
         }
         {
             #[doc(hidden)]
-            type UnderlyingSolTuple<'a> = (IHelloWorldServiceManager::Task,);
+            type UnderlyingSolTuple<'a> = (IUniGuardServiceManager::Task,);
             #[doc(hidden)]
             type UnderlyingRustTuple<'a> =
-                (<IHelloWorldServiceManager::Task as alloy::sol_types::SolType>::RustType,);
+                (<IUniGuardServiceManager::Task as alloy::sol_types::SolType>::RustType,);
             #[cfg(test)]
             #[allow(dead_code, unreachable_patterns)]
             fn _type_assertion(_t: alloy_sol_types::private::AssertTypeEq<UnderlyingRustTuple>) {
@@ -2998,7 +2998,7 @@ pub mod HelloWorldServiceManager {
             type Parameters<'a> = (alloy::sol_types::sol_data::String,);
             type Token<'a> = <Self::Parameters<'a> as alloy_sol_types::SolType>::Token<'a>;
             type Return = createNewTaskReturn;
-            type ReturnTuple<'a> = (IHelloWorldServiceManager::Task,);
+            type ReturnTuple<'a> = (IUniGuardServiceManager::Task,);
             type ReturnToken<'a> = <Self::ReturnTuple<'a> as alloy_sol_types::SolType>::Token<'a>;
             const SIGNATURE: &'static str = "createNewTask(string)";
             const SELECTOR: [u8; 4] = [133u8, 237u8, 248u8, 116u8];
@@ -3801,12 +3801,12 @@ pub mod HelloWorldServiceManager {
     };
     /**Function with signature `respondToTask((string,uint32),uint32,bytes)` and selector `0x3415a49c`.
     ```solidity
-    function respondToTask(IHelloWorldServiceManager.Task memory task, uint32 referenceTaskIndex, bytes memory signature) external;
+    function respondToTask(IUniGuardServiceManager.Task memory task, uint32 referenceTaskIndex, bytes memory signature) external;
     ```*/
     #[allow(non_camel_case_types, non_snake_case)]
     #[derive(Clone)]
     pub struct respondToTaskCall {
-        pub task: <IHelloWorldServiceManager::Task as alloy::sol_types::SolType>::RustType,
+        pub task: <IUniGuardServiceManager::Task as alloy::sol_types::SolType>::RustType,
         pub referenceTaskIndex: u32,
         pub signature: alloy::sol_types::private::Bytes,
     }
@@ -3820,13 +3820,13 @@ pub mod HelloWorldServiceManager {
         {
             #[doc(hidden)]
             type UnderlyingSolTuple<'a> = (
-                IHelloWorldServiceManager::Task,
+                IUniGuardServiceManager::Task,
                 alloy::sol_types::sol_data::Uint<32>,
                 alloy::sol_types::sol_data::Bytes,
             );
             #[doc(hidden)]
             type UnderlyingRustTuple<'a> = (
-                <IHelloWorldServiceManager::Task as alloy::sol_types::SolType>::RustType,
+                <IUniGuardServiceManager::Task as alloy::sol_types::SolType>::RustType,
                 u32,
                 alloy::sol_types::private::Bytes,
             );
@@ -3890,7 +3890,7 @@ pub mod HelloWorldServiceManager {
         #[automatically_derived]
         impl alloy_sol_types::SolCall for respondToTaskCall {
             type Parameters<'a> = (
-                IHelloWorldServiceManager::Task,
+                IUniGuardServiceManager::Task,
                 alloy::sol_types::sol_data::Uint<32>,
                 alloy::sol_types::sol_data::Bytes,
             );
@@ -3909,7 +3909,7 @@ pub mod HelloWorldServiceManager {
             #[inline]
             fn tokenize(&self) -> Self::Token<'_> {
                 (
-                    <IHelloWorldServiceManager::Task as alloy_sol_types::SolType>::tokenize(
+                    <IUniGuardServiceManager::Task as alloy_sol_types::SolType>::tokenize(
                         &self.task,
                     ),
                     <alloy::sol_types::sol_data::Uint<32> as alloy_sol_types::SolType>::tokenize(
@@ -4473,8 +4473,8 @@ pub mod HelloWorldServiceManager {
             }
         }
     };
-    ///Container for all the [`HelloWorldServiceManager`](self) function calls.
-    pub enum HelloWorldServiceManagerCalls {
+    ///Container for all the [`UniGuardServiceManager`](self) function calls.
+    pub enum UniGuardServiceManagerCalls {
         allTaskHashes(allTaskHashesCall),
         allTaskResponses(allTaskResponsesCall),
         avsDirectory(avsDirectoryCall),
@@ -4495,7 +4495,7 @@ pub mod HelloWorldServiceManager {
         updateAVSMetadataURI(updateAVSMetadataURICall),
     }
     #[automatically_derived]
-    impl HelloWorldServiceManagerCalls {
+    impl UniGuardServiceManagerCalls {
         /// All the selectors of this enum.
         ///
         /// Note that the selectors might not be in the same order as the variants.
@@ -4524,8 +4524,8 @@ pub mod HelloWorldServiceManager {
         ];
     }
     #[automatically_derived]
-    impl alloy_sol_types::SolInterface for HelloWorldServiceManagerCalls {
-        const NAME: &'static str = "HelloWorldServiceManagerCalls";
+    impl alloy_sol_types::SolInterface for UniGuardServiceManagerCalls {
+        const NAME: &'static str = "UniGuardServiceManagerCalls";
         const MIN_DATA_LENGTH: usize = 0usize;
         const COUNT: usize = 18usize;
         #[inline]
@@ -4592,17 +4592,17 @@ pub mod HelloWorldServiceManager {
                 &[u8],
                 bool,
             )
-                -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>] = &[
+                -> alloy_sol_types::Result<UniGuardServiceManagerCalls>] = &[
                 {
                     fn allTaskHashes(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <allTaskHashesCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::allTaskHashes)
+                        .map(UniGuardServiceManagerCalls::allTaskHashes)
                     }
                     allTaskHashes
                 },
@@ -4610,14 +4610,14 @@ pub mod HelloWorldServiceManager {
                     fn getOperatorRestakedStrategies(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <getOperatorRestakedStrategiesCall as alloy_sol_types::SolCall>::abi_decode_raw(
                                 data,
                                 validate,
                             )
                             .map(
-                                HelloWorldServiceManagerCalls::getOperatorRestakedStrategies,
+                                UniGuardServiceManagerCalls::getOperatorRestakedStrategies,
                             )
                     }
                     getOperatorRestakedStrategies
@@ -4626,12 +4626,12 @@ pub mod HelloWorldServiceManager {
                     fn respondToTask(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <respondToTaskCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::respondToTask)
+                        .map(UniGuardServiceManagerCalls::respondToTask)
                     }
                     respondToTask
                 },
@@ -4639,12 +4639,12 @@ pub mod HelloWorldServiceManager {
                     fn setRewardsInitiator(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <setRewardsInitiatorCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::setRewardsInitiator)
+                        .map(UniGuardServiceManagerCalls::setRewardsInitiator)
                     }
                     setRewardsInitiator
                 },
@@ -4652,12 +4652,12 @@ pub mod HelloWorldServiceManager {
                     fn stakeRegistry(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <stakeRegistryCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::stakeRegistry)
+                        .map(UniGuardServiceManagerCalls::stakeRegistry)
                     }
                     stakeRegistry
                 },
@@ -4665,12 +4665,12 @@ pub mod HelloWorldServiceManager {
                     fn avsDirectory(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <avsDirectoryCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::avsDirectory)
+                        .map(UniGuardServiceManagerCalls::avsDirectory)
                     }
                     avsDirectory
                 },
@@ -4678,12 +4678,12 @@ pub mod HelloWorldServiceManager {
                     fn renounceOwnership(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <renounceOwnershipCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::renounceOwnership)
+                        .map(UniGuardServiceManagerCalls::renounceOwnership)
                     }
                     renounceOwnership
                 },
@@ -4691,12 +4691,12 @@ pub mod HelloWorldServiceManager {
                     fn createNewTask(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <createNewTaskCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::createNewTask)
+                        .map(UniGuardServiceManagerCalls::createNewTask)
                     }
                     createNewTask
                 },
@@ -4704,12 +4704,12 @@ pub mod HelloWorldServiceManager {
                     fn latestTaskNum(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <latestTaskNumCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::latestTaskNum)
+                        .map(UniGuardServiceManagerCalls::latestTaskNum)
                     }
                     latestTaskNum
                 },
@@ -4717,10 +4717,10 @@ pub mod HelloWorldServiceManager {
                     fn owner(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <ownerCall as alloy_sol_types::SolCall>::abi_decode_raw(data, validate)
-                            .map(HelloWorldServiceManagerCalls::owner)
+                            .map(UniGuardServiceManagerCalls::owner)
                     }
                     owner
                 },
@@ -4728,12 +4728,12 @@ pub mod HelloWorldServiceManager {
                     fn registerOperatorToAVS(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <registerOperatorToAVSCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::registerOperatorToAVS)
+                        .map(UniGuardServiceManagerCalls::registerOperatorToAVS)
                     }
                     registerOperatorToAVS
                 },
@@ -4741,12 +4741,12 @@ pub mod HelloWorldServiceManager {
                     fn deregisterOperatorFromAVS(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <deregisterOperatorFromAVSCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::deregisterOperatorFromAVS)
+                        .map(UniGuardServiceManagerCalls::deregisterOperatorFromAVS)
                     }
                     deregisterOperatorFromAVS
                 },
@@ -4754,12 +4754,12 @@ pub mod HelloWorldServiceManager {
                     fn updateAVSMetadataURI(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <updateAVSMetadataURICall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::updateAVSMetadataURI)
+                        .map(UniGuardServiceManagerCalls::updateAVSMetadataURI)
                     }
                     updateAVSMetadataURI
                 },
@@ -4767,12 +4767,12 @@ pub mod HelloWorldServiceManager {
                     fn allTaskResponses(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <allTaskResponsesCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::allTaskResponses)
+                        .map(UniGuardServiceManagerCalls::allTaskResponses)
                     }
                     allTaskResponses
                 },
@@ -4780,12 +4780,12 @@ pub mod HelloWorldServiceManager {
                     fn getRestakeableStrategies(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <getRestakeableStrategiesCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::getRestakeableStrategies)
+                        .map(UniGuardServiceManagerCalls::getRestakeableStrategies)
                     }
                     getRestakeableStrategies
                 },
@@ -4793,12 +4793,12 @@ pub mod HelloWorldServiceManager {
                     fn transferOwnership(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <transferOwnershipCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::transferOwnership)
+                        .map(UniGuardServiceManagerCalls::transferOwnership)
                     }
                     transferOwnership
                 },
@@ -4806,12 +4806,12 @@ pub mod HelloWorldServiceManager {
                     fn rewardsInitiator(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <rewardsInitiatorCall as alloy_sol_types::SolCall>::abi_decode_raw(
                             data, validate,
                         )
-                        .map(HelloWorldServiceManagerCalls::rewardsInitiator)
+                        .map(UniGuardServiceManagerCalls::rewardsInitiator)
                     }
                     rewardsInitiator
                 },
@@ -4819,14 +4819,14 @@ pub mod HelloWorldServiceManager {
                     fn createAVSRewardsSubmission(
                         data: &[u8],
                         validate: bool,
-                    ) -> alloy_sol_types::Result<HelloWorldServiceManagerCalls>
+                    ) -> alloy_sol_types::Result<UniGuardServiceManagerCalls>
                     {
                         <createAVSRewardsSubmissionCall as alloy_sol_types::SolCall>::abi_decode_raw(
                                 data,
                                 validate,
                             )
                             .map(
-                                HelloWorldServiceManagerCalls::createAVSRewardsSubmission,
+                                UniGuardServiceManagerCalls::createAVSRewardsSubmission,
                             )
                     }
                     createAVSRewardsSubmission
@@ -5007,8 +5007,8 @@ pub mod HelloWorldServiceManager {
             }
         }
     }
-    ///Container for all the [`HelloWorldServiceManager`](self) events.
-    pub enum HelloWorldServiceManagerEvents {
+    ///Container for all the [`UniGuardServiceManager`](self) events.
+    pub enum UniGuardServiceManagerEvents {
         Initialized(Initialized),
         NewTaskCreated(NewTaskCreated),
         OwnershipTransferred(OwnershipTransferred),
@@ -5016,7 +5016,7 @@ pub mod HelloWorldServiceManager {
         TaskResponded(TaskResponded),
     }
     #[automatically_derived]
-    impl HelloWorldServiceManagerEvents {
+    impl UniGuardServiceManagerEvents {
         /// All the selectors of this enum.
         ///
         /// Note that the selectors might not be in the same order as the variants.
@@ -5052,8 +5052,8 @@ pub mod HelloWorldServiceManager {
         ];
     }
     #[automatically_derived]
-    impl alloy_sol_types::SolEventInterface for HelloWorldServiceManagerEvents {
-        const NAME: &'static str = "HelloWorldServiceManagerEvents";
+    impl alloy_sol_types::SolEventInterface for UniGuardServiceManagerEvents {
+        const NAME: &'static str = "UniGuardServiceManagerEvents";
         const COUNT: usize = 5usize;
         fn decode_raw_log(
             topics: &[alloy_sol_types::Word],
@@ -5104,7 +5104,7 @@ pub mod HelloWorldServiceManager {
         }
     }
     #[automatically_derived]
-    impl alloy_sol_types::private::IntoLogData for HelloWorldServiceManagerEvents {
+    impl alloy_sol_types::private::IntoLogData for UniGuardServiceManagerEvents {
         fn to_log_data(&self) -> alloy_sol_types::private::LogData {
             match self {
                 Self::Initialized(inner) => {
@@ -5145,9 +5145,9 @@ pub mod HelloWorldServiceManager {
         }
     }
     use alloy::contract as alloy_contract;
-    /**Creates a new wrapper around an on-chain [`HelloWorldServiceManager`](self) contract instance.
+    /**Creates a new wrapper around an on-chain [`UniGuardServiceManager`](self) contract instance.
 
-    See the [wrapper's documentation](`HelloWorldServiceManagerInstance`) for more details.*/
+    See the [wrapper's documentation](`UniGuardServiceManagerInstance`) for more details.*/
     #[inline]
     pub const fn new<
         T: alloy_contract::private::Transport + ::core::clone::Clone,
@@ -5156,8 +5156,8 @@ pub mod HelloWorldServiceManager {
     >(
         address: alloy_sol_types::private::Address,
         provider: P,
-    ) -> HelloWorldServiceManagerInstance<T, P, N> {
-        HelloWorldServiceManagerInstance::<T, P, N>::new(address, provider)
+    ) -> UniGuardServiceManagerInstance<T, P, N> {
+        UniGuardServiceManagerInstance::<T, P, N>::new(address, provider)
     }
     /**Deploys this contract using the given `provider` and constructor arguments, if any.
 
@@ -5175,9 +5175,9 @@ pub mod HelloWorldServiceManager {
         _stakeRegistry: alloy::sol_types::private::Address,
         _delegationManager: alloy::sol_types::private::Address,
     ) -> impl ::core::future::Future<
-        Output = alloy_contract::Result<HelloWorldServiceManagerInstance<T, P, N>>,
+        Output = alloy_contract::Result<UniGuardServiceManagerInstance<T, P, N>>,
     > {
-        HelloWorldServiceManagerInstance::<T, P, N>::deploy(
+        UniGuardServiceManagerInstance::<T, P, N>::deploy(
             provider,
             _avsDirectory,
             _stakeRegistry,
@@ -5200,17 +5200,17 @@ pub mod HelloWorldServiceManager {
         _stakeRegistry: alloy::sol_types::private::Address,
         _delegationManager: alloy::sol_types::private::Address,
     ) -> alloy_contract::RawCallBuilder<T, P, N> {
-        HelloWorldServiceManagerInstance::<T, P, N>::deploy_builder(
+        UniGuardServiceManagerInstance::<T, P, N>::deploy_builder(
             provider,
             _avsDirectory,
             _stakeRegistry,
             _delegationManager,
         )
     }
-    /**A [`HelloWorldServiceManager`](self) instance.
+    /**A [`UniGuardServiceManager`](self) instance.
 
     Contains type-safe methods for interacting with an on-chain instance of the
-    [`HelloWorldServiceManager`](self) contract located at a given `address`, using a given
+    [`UniGuardServiceManager`](self) contract located at a given `address`, using a given
     provider `P`.
 
     If the contract bytecode is available (see the [`sol!`](alloy_sol_types::sol!)
@@ -5219,16 +5219,16 @@ pub mod HelloWorldServiceManager {
 
     See the [module-level documentation](self) for all the available methods.*/
     #[derive(Clone)]
-    pub struct HelloWorldServiceManagerInstance<T, P, N = alloy_contract::private::Ethereum> {
+    pub struct UniGuardServiceManagerInstance<T, P, N = alloy_contract::private::Ethereum> {
         address: alloy_sol_types::private::Address,
         provider: P,
         _network_transport: ::core::marker::PhantomData<(N, T)>,
     }
     #[automatically_derived]
-    impl<T, P, N> ::core::fmt::Debug for HelloWorldServiceManagerInstance<T, P, N> {
+    impl<T, P, N> ::core::fmt::Debug for UniGuardServiceManagerInstance<T, P, N> {
         #[inline]
         fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
-            f.debug_tuple("HelloWorldServiceManagerInstance")
+            f.debug_tuple("UniGuardServiceManagerInstance")
                 .field(&self.address)
                 .finish()
         }
@@ -5239,11 +5239,11 @@ pub mod HelloWorldServiceManager {
             T: alloy_contract::private::Transport + ::core::clone::Clone,
             P: alloy_contract::private::Provider<T, N>,
             N: alloy_contract::private::Network,
-        > HelloWorldServiceManagerInstance<T, P, N>
+        > UniGuardServiceManagerInstance<T, P, N>
     {
-        /**Creates a new wrapper around an on-chain [`HelloWorldServiceManager`](self) contract instance.
+        /**Creates a new wrapper around an on-chain [`UniGuardServiceManager`](self) contract instance.
 
-        See the [wrapper's documentation](`HelloWorldServiceManagerInstance`) for more details.*/
+        See the [wrapper's documentation](`UniGuardServiceManagerInstance`) for more details.*/
         #[inline]
         pub const fn new(address: alloy_sol_types::private::Address, provider: P) -> Self {
             Self {
@@ -5263,7 +5263,7 @@ pub mod HelloWorldServiceManager {
             _avsDirectory: alloy::sol_types::private::Address,
             _stakeRegistry: alloy::sol_types::private::Address,
             _delegationManager: alloy::sol_types::private::Address,
-        ) -> alloy_contract::Result<HelloWorldServiceManagerInstance<T, P, N>> {
+        ) -> alloy_contract::Result<UniGuardServiceManagerInstance<T, P, N>> {
             let call_builder =
                 Self::deploy_builder(provider, _avsDirectory, _stakeRegistry, _delegationManager);
             let contract_address = call_builder.deploy().await?;
@@ -5316,11 +5316,11 @@ pub mod HelloWorldServiceManager {
             &self.provider
         }
     }
-    impl<T, P: ::core::clone::Clone, N> HelloWorldServiceManagerInstance<T, &P, N> {
+    impl<T, P: ::core::clone::Clone, N> UniGuardServiceManagerInstance<T, &P, N> {
         /// Clones the provider and returns a new instance with the cloned provider.
         #[inline]
-        pub fn with_cloned_provider(self) -> HelloWorldServiceManagerInstance<T, P, N> {
-            HelloWorldServiceManagerInstance {
+        pub fn with_cloned_provider(self) -> UniGuardServiceManagerInstance<T, P, N> {
+            UniGuardServiceManagerInstance {
                 address: self.address,
                 provider: ::core::clone::Clone::clone(&self.provider),
                 _network_transport: ::core::marker::PhantomData,
@@ -5333,7 +5333,7 @@ pub mod HelloWorldServiceManager {
             T: alloy_contract::private::Transport + ::core::clone::Clone,
             P: alloy_contract::private::Provider<T, N>,
             N: alloy_contract::private::Network,
-        > HelloWorldServiceManagerInstance<T, P, N>
+        > UniGuardServiceManagerInstance<T, P, N>
     {
         /// Creates a new call builder using this contract instance's provider and address.
         ///
@@ -5428,7 +5428,7 @@ pub mod HelloWorldServiceManager {
         ///Creates a new call builder for the [`respondToTask`] function.
         pub fn respondToTask(
             &self,
-            task: <IHelloWorldServiceManager::Task as alloy::sol_types::SolType>::RustType,
+            task: <IUniGuardServiceManager::Task as alloy::sol_types::SolType>::RustType,
             referenceTaskIndex: u32,
             signature: alloy::sol_types::private::Bytes,
         ) -> alloy_contract::SolCallBuilder<T, &P, respondToTaskCall, N> {
@@ -5478,7 +5478,7 @@ pub mod HelloWorldServiceManager {
             T: alloy_contract::private::Transport + ::core::clone::Clone,
             P: alloy_contract::private::Provider<T, N>,
             N: alloy_contract::private::Network,
-        > HelloWorldServiceManagerInstance<T, P, N>
+        > UniGuardServiceManagerInstance<T, P, N>
     {
         /// Creates a new event filter using this contract instance's provider and address.
         ///

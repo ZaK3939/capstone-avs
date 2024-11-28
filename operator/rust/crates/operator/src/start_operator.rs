@@ -19,7 +19,7 @@ use eyre::Result;
 use hello_world_utils::ecdsastakeregistry::ECDSAStakeRegistry;
 use hello_world_utils::{
     ecdsastakeregistry::ISignatureUtils::SignatureWithSaltAndExpiry,
-    helloworldservicemanager::{HelloWorldServiceManager, IHelloWorldServiceManager::Task},
+    uniguardservicemanager::{UniGuardServiceManager, IUniGuardServiceManager::Task},
 };
 use hello_world_utils::{
     parse_hello_world_service_manager, parse_stake_registry_address, EigenLayerData,
@@ -60,7 +60,7 @@ async fn sign_and_response_to_task(
     );
     let hello_world_contract_address: Address =
         parse_hello_world_service_manager("contracts/deployments/hello-world/31337.json")?;
-    let hello_world_contract = HelloWorldServiceManager::new(hello_world_contract_address, &pr);
+    let hello_world_contract = UniGuardServiceManager::new(hello_world_contract_address, &pr);
 
     let response_hash = hello_world_contract
         .respondToTask(
@@ -102,8 +102,8 @@ async fn monitor_new_tasks() -> Result<()> {
 
         for log in logs {
             match log.topic0() {
-                Some(&HelloWorldServiceManager::NewTaskCreated::SIGNATURE_HASH) => {
-                    let HelloWorldServiceManager::NewTaskCreated { taskIndex, task } = log
+                Some(&UniGuardServiceManager::NewTaskCreated::SIGNATURE_HASH) => {
+                    let UniGuardServiceManager::NewTaskCreated { taskIndex, task } = log
                         .log_decode()
                         .expect("Failed to decode log new task created")
                         .inner

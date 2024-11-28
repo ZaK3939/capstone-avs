@@ -11,7 +11,7 @@ import "@eigenlayer/contracts/libraries/Merkle.sol";
 import "../script/DeployEigenLayerCore.s.sol";
 import "../script/HelloWorldDeployer.s.sol";
 import {StrategyFactory} from "@eigenlayer/contracts/strategies/StrategyFactory.sol";
-import {HelloWorldTaskManagerSetup} from "test/HelloWorldServiceManager.t.sol";
+import {UniGuardServiceManagerSetup} from "test/UniGuardServiceManager.t.sol";
 import {
     Quorum,
     StrategyParams,
@@ -29,7 +29,7 @@ contract TestConstants {
     uint256 NUM_EARNERS = 4;
 }
 
-contract SetupPaymentsLibTest is Test, TestConstants, HelloWorldTaskManagerSetup {
+contract SetupPaymentsLibTest is Test, TestConstants, UniGuardServiceManagerSetup {
     using SetupPaymentsLib for *;
     Vm cheats = Vm(VM_ADDRESS);
 

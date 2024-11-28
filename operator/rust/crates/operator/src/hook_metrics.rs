@@ -4,7 +4,7 @@ use dotenv::dotenv;
 use eigen_logging::{get_logger, init_logger, log_level::LogLevel};
 use eigen_utils::get_signer;
 use eyre::Result;
-use hello_world_utils::{helloworldservicemanager::HelloWorldServiceManager, HelloWorldData};
+use hello_world_utils::{uniguardservicemanager::UniGuardServiceManager, HelloWorldData};
 use once_cell::sync::Lazy;
 use rand::Rng;
 use std::{env, str::FromStr};
@@ -40,7 +40,7 @@ async fn create_new_task(task_name: &str) -> Result<()> {
         parsed.addresses.hello_world_service_manager.parse()?;
     let pr = get_signer(&KEY.clone(), ANVIL_RPC_URL);
     let signer = PrivateKeySigner::from_str(&KEY.clone())?;
-    let hello_world_contract = HelloWorldServiceManager::new(hello_world_contract_address, pr);
+    let hello_world_contract = UniGuardServiceManager::new(hello_world_contract_address, pr);
 
     let tx = hello_world_contract
         .createNewTask(task_name.to_string())

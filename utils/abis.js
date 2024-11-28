@@ -5,12 +5,7 @@ const abiDir = 'abis';
 const contractsDir = 'contracts';
 const artifactsDir = path.join(contractsDir, 'out');
 
-const contractsToExtract = [
-  'IAVSDirectory',
-  'IDelegationManager',
-  'ECDSAStakeRegistry',
-  'HelloWorldServiceManager'
-];
+const contractsToExtract = ['IAVSDirectory', 'IDelegationManager', 'ECDSAStakeRegistry', 'UniGuardServiceManager'];
 
 if (!fs.existsSync(abiDir)) {
   fs.mkdirSync(abiDir);

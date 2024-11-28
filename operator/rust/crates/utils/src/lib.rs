@@ -1,6 +1,6 @@
 #![cfg(not(doctest))]
 #[allow(clippy::all, clippy::pedantic, unused_imports)]
-pub mod helloworldservicemanager;
+pub mod uniguardservicemanager;
 
 #[allow(clippy::all, clippy::pedantic, unused_imports)]
 pub mod ecdsastakeregistry;

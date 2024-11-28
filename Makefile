@@ -53,5 +53,5 @@ ___RUST_OFFCHAIN_SOFTWARE___:
 start-rust-operator: ## start operator (part of quickstart) 
 	cargo run --bin start_operator
 
-spam-rust-tasks:  ## start tasks spamming (part of quickstart)
-	cargo run --bin spam_tasks
+hook-rust-tasks:  ## start tasks spamming (part of quickstart)
+	cargo run --bin hook_metrics

@@ -1,11 +1,11 @@
-import { createAnvil, Anvil } from "@viem/anvil";
+import { createAnvil, Anvil } from '@viem/anvil';
 import { describe, beforeAll, afterAll, it, expect } from '@jest/globals';
 import { exec } from 'child_process';
 import fs from 'fs/promises';
 import path from 'path';
 import util from 'util';
-import { ethers } from "ethers";
-import * as dotenv from "dotenv";
+import { ethers } from 'ethers';
+import * as dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -27,7 +27,7 @@ async function loadDeployments(): Promise<Record<string, any>> {
 
   const [coreDeployment, helloWorldDeployment] = await Promise.all([
     loadJsonFile(coreFilePath),
-    loadJsonFile(helloWorldFilePath)
+    loadJsonFile(helloWorldFilePath),
   ]);
 
   if (!coreDeployment || !helloWorldDeployment) {
@@ -37,7 +37,7 @@ async function loadDeployments(): Promise<Record<string, any>> {
 
   return {
     core: coreDeployment,
-    helloWorld: helloWorldDeployment
+    helloWorld: helloWorldDeployment,
   };
 }
 
@@ -63,21 +63,34 @@ describe('Operator Functionality', () => {
 
     const delegationManagerABI = await loadJsonFile(path.join(__dirname, '..', 'abis', 'IDelegationManager.json'));
     const ecdsaRegistryABI = await loadJsonFile(path.join(__dirname, '..', 'abis', 'ECDSAStakeRegistry.json'));
-    const helloWorldServiceManagerABI = await loadJsonFile(path.join(__dirname, '..', 'abis', 'HelloWorldServiceManager.json'));
+    const helloWorldServiceManagerABI = await loadJsonFile(
+      path.join(__dirname, '..', 'abis', 'UniGuardServiceManager.json'),
+    );
     const avsDirectoryABI = await loadJsonFile(path.join(__dirname, '..', 'abis', 'IAVSDirectory.json'));
 
     delegationManager = new ethers.Contract(deployment.core.addresses.delegation, delegationManagerABI, signer);
-    helloWorldServiceManager = new ethers.Contract(deployment.helloWorld.addresses.helloWorldServiceManager, helloWorldServiceManagerABI, signer);
-    ecdsaRegistryContract = new ethers.Contract(deployment.helloWorld.addresses.stakeRegistry, ecdsaRegistryABI, signer);
+    helloWorldServiceManager = new ethers.Contract(
+      deployment.helloWorld.addresses.helloWorldServiceManager,
+      helloWorldServiceManagerABI,
+      signer,
+    );
+    ecdsaRegistryContract = new ethers.Contract(
+      deployment.helloWorld.addresses.stakeRegistry,
+      ecdsaRegistryABI,
+      signer,
+    );
     avsDirectory = new ethers.Contract(deployment.core.addresses.avsDirectory, avsDirectoryABI, signer);
   });
 
   it('should register as an operator', async () => {
-    const tx = await delegationManager.registerAsOperator({
-      __deprecated_earningsReceiver: await signer.getAddress(),
-      delegationApprover: "0x0000000000000000000000000000000000000000",
-      stakerOptOutWindowBlocks: 0
-    }, "");
+    const tx = await delegationManager.registerAsOperator(
+      {
+        __deprecated_earningsReceiver: await signer.getAddress(),
+        delegationApprover: '0x0000000000000000000000000000000000000000',
+        stakerOptOutWindowBlocks: 0,
+      },
+      '',
+    );
     await tx.wait();
 
     const isOperator = await delegationManager.isOperator(signer.address);
@@ -92,7 +105,7 @@ describe('Operator Functionality', () => {
       signer.address,
       await helloWorldServiceManager.getAddress(),
       salt,
-      expiry
+      expiry,
     );
 
     const operatorSigningKey = new ethers.SigningKey(process.env.PRIVATE_KEY!);
@@ -103,9 +116,9 @@ describe('Operator Functionality', () => {
       {
         signature: operatorSignature,
         salt: salt,
-        expiry: expiry
+        expiry: expiry,
       },
-      signer.address
+      signer.address,
     );
     await tx.wait();
 
@@ -114,7 +127,7 @@ describe('Operator Functionality', () => {
   });
 
   it('should create a new task', async () => {
-    const taskName = "Steven";
+    const taskName = 'Steven';
 
     const tx = await helloWorldServiceManager.createNewTask(taskName);
     await tx.wait();
@@ -123,23 +136,23 @@ describe('Operator Functionality', () => {
   it('should sign and respond to a task', async () => {
     const taskIndex = 0;
     const taskCreatedBlock = await provider.getBlockNumber();
-    const taskName = "Steven";
+    const taskName = 'Steven';
     const message = `Hello, ${taskName}`;
-    const messageHash = ethers.solidityPackedKeccak256(["string"], [message]);
+    const messageHash = ethers.solidityPackedKeccak256(['string'], [message]);
     const messageBytes = ethers.getBytes(messageHash);
     const signature = await signer.signMessage(messageBytes);
 
     const operators = [await signer.getAddress()];
     const signatures = [signature];
     const signedTask = ethers.AbiCoder.defaultAbiCoder().encode(
-        ["address[]", "bytes[]", "uint32"],
-        [operators, signatures, ethers.toBigInt(taskCreatedBlock)]
+      ['address[]', 'bytes[]', 'uint32'],
+      [operators, signatures, ethers.toBigInt(taskCreatedBlock)],
     );
 
     const tx = await helloWorldServiceManager.respondToTask(
-        { name: taskName, taskCreatedBlock: taskCreatedBlock },
-        taskIndex,
-        signedTask
+      { name: taskName, taskCreatedBlock: taskCreatedBlock },
+      taskIndex,
+      signedTask,
     );
     await tx.wait();
   });
