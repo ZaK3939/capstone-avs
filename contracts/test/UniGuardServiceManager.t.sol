@@ -249,28 +249,61 @@ contract UniGuardServiceManagerSetup is Test {
         helloWorldServiceManager.createNewTask(taskName);
     }
 
-    function respondToTask(
-        Operator memory operator,
-        IUniGuardServiceManager.Task memory task,
-        uint32 referenceTaskIndex
-    ) internal {
-        // Create the message hash
-        bytes32 messageHash = keccak256(abi.encodePacked("Hello, ", task.name));
+    function addressToString(address _addr) internal pure returns (string memory) {
+        bytes memory s = new bytes(40);
+        for (uint i = 0; i < 20; i++) {
+            bytes1 b = bytes1(uint8(uint(uint160(_addr)) / (2**(8*(19 - i)))));
+            bytes1 hi = bytes1(uint8(b) / 16);
+            bytes1 lo = bytes1(uint8(b) - 16 * uint8(hi));
+            s[2*i] = char(hi);
+            s[2*i+1] = char(lo);            
+        }
+        return string(abi.encodePacked("0x", s));
+    }
 
+    function char(bytes1 b) internal pure returns (bytes1 c) {
+        if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
+        else return bytes1(uint8(b) + 0x57);
+    }
+
+    function uint256ToString(uint256 value) internal pure returns (string memory) {
+        if (value == 0) {
+            return "0";
+        }
+        uint256 temp = value;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+        bytes memory buffer = new bytes(digits);
+        while (value != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+            value /= 10;
+        }
+        return string(buffer);
+    }
+    
+    function respondToTask(
+    Operator memory operator,
+    IUniGuardServiceManager.Task memory task,
+    uint32 referenceTaskIndex
+    ) internal {
+        string memory metrics = string(abi.encodePacked(
+            '{',
+            '"hookAddress":"', addressToString(operator.key.addr), '",',
+            '"timestamp":', uint256ToString(block.timestamp), ',',
+            '"gasLimit":500000',
+            '}'
+        ));
+
+        bytes32 messageHash = keccak256(abi.encodePacked(metrics, task.name));
         bytes memory signature = signWithSigningKey(operator, messageHash);
 
-        address[] memory operators = new address[](1);
-        operators[0]=operator.key.addr;
-        bytes[] memory signatures = new bytes[](1);
-        signatures[0]= signature;
-
-        bytes memory signedTask = abi.encode(operators, signatures, uint32(block.number));
-
-        IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager).respondToTask(
-            task, referenceTaskIndex, signedTask
-        );
-    }
-}
+        IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager)
+            .respondToTask(task, referenceTaskIndex, signature, metrics);
+    }}
 
 contract UniGuardServiceManagerInitialization is UniGuardServiceManagerSetup {
     function testInitialization() public view {
@@ -419,18 +452,26 @@ contract RespondToTask is UniGuardServiceManagerSetup {
         IUniGuardServiceManager.Task memory newTask = sm.createNewTask(taskName);
         uint32 taskIndex = sm.latestTaskNum() - 1;
 
-        bytes32 messageHash = keccak256(abi.encodePacked("Hello, ", taskName));
+        string memory metrics = string(abi.encodePacked(
+            '{',
+            '"hookAddress":"', addressToString(operators[0].key.addr), '",',
+            '"timestamp":', uint256ToString(block.timestamp), ',',
+            '"gasLimit":500000',
+            '}'
+        ));
+
+        bytes32 messageHash = keccak256(abi.encodePacked(metrics, taskName));
         bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
-        bytes memory signature = signWithSigningKey(operators[0], ethSignedMessageHash); // TODO: Use signing key after changes to service manager
-
-        address[] memory operatorsMem = new address[](1);
-        operatorsMem[0]=operators[0].key.addr;
-        bytes[] memory signatures = new bytes[](1);
-        signatures[0]= signature;
-
-        bytes memory signedTask = abi.encode(operatorsMem, signatures, uint32(block.number));
+        bytes memory signature = signWithSigningKey(operators[0], ethSignedMessageHash);
 
         vm.roll(block.number+1);
-        sm.respondToTask(newTask, taskIndex, signedTask);
+        sm.respondToTask(newTask, taskIndex, signature, metrics);
+    }
+
+    function testMetricsInTask() public {
+        string memory taskName = "TestTask";
+        IUniGuardServiceManager.Task memory newTask = sm.createNewTask(taskName);
+        uint32 taskIndex = sm.latestTaskNum() - 1;
+        respondToTask(operators[0], newTask, taskIndex);
     }
 }

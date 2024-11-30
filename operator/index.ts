@@ -4,78 +4,150 @@ const fs = require('fs');
 const path = require('path');
 dotenv.config();
 
-// Check if the process.env object is empty
+// Check env
 if (!Object.keys(process.env).length) {
   throw new Error('process.env object is empty');
 }
 
+// Debug deployment data loading
+console.log('Loading deployment data...');
+console.log('Current directory:', __dirname);
+console.log(
+  'Attempting to load deployment data from:',
+  path.resolve(__dirname, '../contracts/deployments/hello-world/31337.json'),
+);
+
 // Setup env variables
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
-/// TODO: Hack
 let chainId = 31337;
 
+// Load deployment data
 const avsDeploymentData = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, `../contracts/deployments/hello-world/${chainId}.json`), 'utf8'),
 );
-// Load core deployment data
+console.log('AVS Deployment data:', avsDeploymentData);
+
 const coreDeploymentData = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, `../contracts/deployments/core/${chainId}.json`), 'utf8'),
 );
+console.log('Core Deployment data:', coreDeploymentData);
 
-const delegationManagerAddress = coreDeploymentData.addresses.delegation; // todo: reminder to fix the naming of this contract in the deployment file, change to delegationManager
+// Get contract addresses
+const delegationManagerAddress = coreDeploymentData.addresses.delegation;
 const avsDirectoryAddress = coreDeploymentData.addresses.avsDirectory;
-const helloWorldServiceManagerAddress = avsDeploymentData.addresses.helloWorldServiceManager;
+const serviceManagerAddress = avsDeploymentData.addresses.helloWorldServiceManager;
 const ecdsaStakeRegistryAddress = avsDeploymentData.addresses.stakeRegistry;
+
+console.log('Contract addresses:', {
+  delegationManager: delegationManagerAddress,
+  avsDirectory: avsDirectoryAddress,
+  serviceManager: serviceManagerAddress,
+  ecdsaStakeRegistry: ecdsaStakeRegistryAddress,
+});
 
 // Load ABIs
 const delegationManagerABI = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, '../abis/IDelegationManager.json'), 'utf8'),
 );
+
 const ecdsaRegistryABI = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, '../abis/ECDSAStakeRegistry.json'), 'utf8'),
 );
-const helloWorldServiceManagerABI = JSON.parse(
+
+const serviceManagerABI = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, '../abis/UniGuardServiceManager.json'), 'utf8'),
 );
+
 const avsDirectoryABI = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../abis/IAVSDirectory.json'), 'utf8'));
 
-// Initialize contract objects from ABIs
+// Initialize contracts
 const delegationManager = new ethers.Contract(delegationManagerAddress, delegationManagerABI, wallet);
-const helloWorldServiceManager = new ethers.Contract(
-  helloWorldServiceManagerAddress,
-  helloWorldServiceManagerABI,
-  wallet,
-);
+const serviceManager = new ethers.Contract(serviceManagerAddress, serviceManagerABI, wallet);
 const ecdsaRegistryContract = new ethers.Contract(ecdsaStakeRegistryAddress, ecdsaRegistryABI, wallet);
 const avsDirectory = new ethers.Contract(avsDirectoryAddress, avsDirectoryABI, wallet);
 
+if (!serviceManagerAddress) {
+  console.error('Service manager address is undefined');
+  console.log('Available addresses:', avsDeploymentData.addresses);
+  throw new Error('Service manager address not found');
+}
+
+console.log('Contract addresses:', {
+  delegationManager: delegationManagerAddress,
+  avsDirectory: avsDirectoryAddress,
+  serviceManager: serviceManagerAddress,
+  ecdsaStakeRegistry: ecdsaStakeRegistryAddress,
+});
+
+// Metrics collection
+async function collectMetrics(hookAddress: string) {
+  try {
+    const blockNumber = await provider.getBlockNumber();
+    const block = await provider.getBlock(blockNumber);
+
+    return JSON.stringify({
+      hookAddress: hookAddress,
+      timestamp: Date.now(),
+      blockNumber: blockNumber,
+      blockTimestamp: block?.timestamp,
+      txCount: 1, // Initial simple implementation
+    });
+  } catch (error) {
+    console.error('Error collecting metrics:', error);
+    throw error;
+  }
+}
+
+function parseHookAddressFromTaskName(taskName: string): string {
+  const parts = taskName.split('_');
+  if (parts.length < 2) {
+    throw new Error(`Invalid task name format: ${taskName}`);
+  }
+  return parts[1];
+}
+
 const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number, taskName: string) => {
-  const message = `Hello, ${taskName}`;
-  const messageHash = ethers.solidityPackedKeccak256(['string'], [message]);
-  const messageBytes = ethers.getBytes(messageHash);
-  const signature = await wallet.signMessage(messageBytes);
+  try {
+    const hookAddress = parseHookAddressFromTaskName(taskName);
+    const metrics = await collectMetrics(hookAddress);
+    const metricsStr = JSON.stringify(metrics);
 
-  console.log(`Signing and responding to task ${taskIndex}`);
+    const messageHash = ethers.solidityPackedKeccak256(['string', 'string'], [metricsStr, taskName]);
+    const messageBytes = ethers.getBytes(messageHash);
+    const signature = await wallet.signMessage(messageBytes);
 
-  const operators = [await wallet.getAddress()];
-  const signatures = [signature];
-  const signedTask = ethers.AbiCoder.defaultAbiCoder().encode(
-    ['address[]', 'bytes[]', 'uint32'],
-    [operators, signatures, ethers.toBigInt((await provider.getBlockNumber()) - 1)],
-  );
+    const operators = [await wallet.getAddress()];
+    const signatures = [signature];
+    const signedTask = ethers.AbiCoder.defaultAbiCoder().encode(
+      ['address[]', 'bytes[]', 'uint32'],
+      [operators, signatures, await provider.getBlockNumber()],
+    );
 
-  const tx = await helloWorldServiceManager.respondToTask(
-    { name: taskName, taskCreatedBlock: taskCreatedBlock },
-    taskIndex,
-    signedTask,
-  );
-  await tx.wait();
-  console.log(`Responded to task.`);
+    const tx = await serviceManager.respondToTask(
+      { name: taskName, taskCreatedBlock },
+      taskIndex,
+      signedTask,
+      metricsStr,
+      { gasLimit: 500000 },
+    );
+
+    const receipt = await tx.wait();
+    console.log('Transaction hash:', receipt.hash);
+  } catch (error) {
+    console.error('Error details:', error);
+    throw error;
+  }
 };
 
+const checkOperatorStatus = async () => {
+  const isRegistered = await ecdsaRegistryContract.operatorRegistered(wallet.address);
+  console.log('Operator registration status:', isRegistered);
+  return isRegistered;
+};
 const registerOperator = async () => {
-  // Registers as an Operator in EigenLayer.
+  console.log('Starting operator registration process...');
+
   try {
     const tx1 = await delegationManager.registerAsOperator(
       {
@@ -85,70 +157,81 @@ const registerOperator = async () => {
       },
       '',
     );
-    await tx1.wait();
-    console.log('Operator registered to Core EigenLayer contracts');
+    const receipt1 = await tx1.wait();
+    console.log(`Operator registered to Core EigenLayer contracts in block ${receipt1.blockNumber}`);
+
+    const salt = ethers.hexlify(ethers.randomBytes(32));
+    const expiry = Math.floor(Date.now() / 1000) + 3600;
+
+    let operatorSignatureWithSaltAndExpiry = {
+      signature: '',
+      salt: salt,
+      expiry: expiry,
+    };
+
+    const operatorDigestHash = await avsDirectory.calculateOperatorAVSRegistrationDigestHash(
+      wallet.address,
+      await serviceManager.getAddress(),
+      salt,
+      expiry,
+    );
+
+    const operatorSigningKey = new ethers.SigningKey(process.env.PRIVATE_KEY!);
+    const operatorSignedDigestHash = operatorSigningKey.sign(operatorDigestHash);
+    operatorSignatureWithSaltAndExpiry.signature = ethers.Signature.from(operatorSignedDigestHash).serialized;
+
+    console.log('Registering Operator to AVS Registry contract');
+
+    const tx2 = await ecdsaRegistryContract.registerOperatorWithSignature(
+      operatorSignatureWithSaltAndExpiry,
+      wallet.address,
+    );
+
+    const receipt2 = await tx2.wait();
+    console.log(`Operator registered on AVS successfully in block ${receipt2.blockNumber}`);
   } catch (error) {
-    console.error('Error in registering as operator:', error);
+    console.error('Error in registerOperator:', error);
+    throw error;
   }
-
-  const salt = ethers.hexlify(ethers.randomBytes(32));
-  const expiry = Math.floor(Date.now() / 1000) + 3600; // Example expiry, 1 hour from now
-
-  // Define the output structure
-  let operatorSignatureWithSaltAndExpiry = {
-    signature: '',
-    salt: salt,
-    expiry: expiry,
-  };
-
-  // Calculate the digest hash, which is a unique value representing the operator, avs, unique value (salt) and expiration date.
-  const operatorDigestHash = await avsDirectory.calculateOperatorAVSRegistrationDigestHash(
-    wallet.address,
-    await helloWorldServiceManager.getAddress(),
-    salt,
-    expiry,
-  );
-  console.log(operatorDigestHash);
-
-  // Sign the digest hash with the operator's private key
-  console.log("Signing digest hash with operator's private key");
-  const operatorSigningKey = new ethers.SigningKey(process.env.PRIVATE_KEY!);
-  const operatorSignedDigestHash = operatorSigningKey.sign(operatorDigestHash);
-
-  // Encode the signature in the required format
-  operatorSignatureWithSaltAndExpiry.signature = ethers.Signature.from(operatorSignedDigestHash).serialized;
-
-  console.log('Registering Operator to AVS Registry contract');
-
-  // Register Operator to AVS
-  // Per release here: https://github.com/Layr-Labs/eigenlayer-middleware/blob/v0.2.1-mainnet-rewards/src/unaudited/ECDSAStakeRegistry.sol#L49
-  const tx2 = await ecdsaRegistryContract.registerOperatorWithSignature(
-    operatorSignatureWithSaltAndExpiry,
-    wallet.address,
-  );
-  await tx2.wait();
-  console.log('Operator registered on AVS successfully');
 };
 
 const monitorNewTasks = async () => {
-  //console.log(`Creating new task "EigenWorld"`);
-  //await helloWorldServiceManager.createNewTask("EigenWorld");
+  console.log('Starting task monitoring...');
 
-  helloWorldServiceManager.on('NewTaskCreated', async (taskIndex: number, task: any) => {
-    console.log(`New task detected: Hello, ${task.name}`);
-    await signAndRespondToTask(taskIndex, task.taskCreatedBlock, task.name);
+  serviceManager.on('NewTaskCreated', async (taskIndex: number, task: any) => {
+    try {
+      console.log(`New task detected: ${task.name} (index: ${taskIndex})`);
+
+      if (task.name.startsWith('metrics_')) {
+        console.log(`Processing metrics task ${taskIndex}`);
+        await signAndRespondToTask(taskIndex, task.taskCreatedBlock, task.name);
+      } else {
+        console.log(`Skipping non-metrics task: ${task.name}`);
+      }
+    } catch (error) {
+      console.error(`Error processing task ${taskIndex}:`, error);
+    }
   });
 
-  console.log('Monitoring for new tasks...');
+  console.log('Monitoring for metrics tasks...');
 };
 
 const main = async () => {
-  await registerOperator();
-  monitorNewTasks().catch((error) => {
-    console.error('Error monitoring tasks:', error);
-  });
+  try {
+    console.log('Starting UniGuard operator...');
+
+    // オペレーターステータスチェック
+    const isRegistered = await checkOperatorStatus();
+    if (!isRegistered) {
+      await registerOperator();
+    }
+
+    await monitorNewTasks();
+    console.log('Operator setup completed successfully');
+  } catch (error) {
+    console.error('Fatal error in main function:', error);
+    process.exit(1);
+  }
 };
 
-main().catch((error) => {
-  console.error('Error in main function:', error);
-});
+main();

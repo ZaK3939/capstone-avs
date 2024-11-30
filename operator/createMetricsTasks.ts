@@ -1,61 +1,57 @@
 import { ethers } from 'ethers';
 import * as dotenv from 'dotenv';
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
 dotenv.config();
+
+// Check env
+if (!Object.keys(process.env).length) {
+  throw new Error('process.env object is empty');
+}
 
 // Setup env variables
 const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
-/// TODO: Hack
 let chainId = 31337;
 
+// Load deployment data
 const avsDeploymentData = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, `../contracts/deployments/hello-world/${chainId}.json`), 'utf8'),
 );
-const helloWorldServiceManagerAddress = avsDeploymentData.addresses.helloWorldServiceManager;
-const helloWorldServiceManagerABI = JSON.parse(
+
+const serviceManagerAddress = avsDeploymentData.addresses.helloWorldServiceManager;
+const serviceManagerABI = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, '../abis/UniGuardServiceManager.json'), 'utf8'),
 );
-// Initialize contract objects from ABIs
-const helloWorldServiceManager = new ethers.Contract(
-  helloWorldServiceManagerAddress,
-  helloWorldServiceManagerABI,
-  wallet,
-);
 
-// Function to generate random names
-function generateRandomName(): string {
-  const adjectives = ['Quick', 'Lazy', 'Sleepy', 'Noisy', 'Hungry'];
-  const nouns = ['Fox', 'Dog', 'Cat', 'Mouse', 'Bear'];
-  const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-  const noun = nouns[Math.floor(Math.random() * nouns.length)];
-  const randomName = `${adjective}${noun}${Math.floor(Math.random() * 1000)}`;
-  return randomName;
+const serviceManager = new ethers.Contract(serviceManagerAddress, serviceManagerABI, wallet);
+
+// メトリクスタスク生成用の関数
+function generateMetricsTaskName(hookAddress: string): string {
+  const timestamp = Date.now();
+  const shortAddr = hookAddress.slice(0, 6);
+  return `metrics_${shortAddr}_${timestamp}`;
 }
 
-async function createNewTask(taskName: string) {
+async function createMetricsTask(hookAddress: string) {
   try {
-    // Send a transaction to the createNewTask function
-    const tx = await helloWorldServiceManager.createNewTask(taskName);
-
-    // Wait for the transaction to be mined
+    const taskName = generateMetricsTaskName(hookAddress);
+    const tx = await serviceManager.createNewTask(taskName);
     const receipt = await tx.wait();
-
-    console.log(`Transaction successful with hash: ${receipt.hash}`);
+    console.log(`Metrics task created for hook ${hookAddress}, tx: ${receipt.hash}`);
   } catch (error) {
-    console.error('Error sending transaction:', error);
+    console.error('Error creating metrics task:', error);
   }
 }
 
-// Function to create a new task with a random name every 15 seconds
-function startCreatingTasks() {
+// 定期的なメトリクス収集タスクの生成
+function startMetricsTasks() {
+  const testHookAddress = '0x1234567890123456789012345678901234567890';
+
   setInterval(() => {
-    const randomName = generateRandomName();
-    console.log(`Creating new task with name: ${randomName}`);
-    createNewTask(randomName);
+    console.log(`Creating metrics task for hook: ${testHookAddress}`);
+    createMetricsTask(testHookAddress);
   }, 24000);
 }
 
-// Start the process
-startCreatingTasks();
+startMetricsTasks();

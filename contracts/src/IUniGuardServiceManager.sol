@@ -29,6 +29,7 @@ interface IUniGuardServiceManager {
     function respondToTask(
         Task calldata task,
         uint32 referenceTaskIndex,
-        bytes calldata signature
+        bytes calldata signature,
+        string memory metrics
     ) external;
 }

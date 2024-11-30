@@ -22,6 +22,7 @@ contract UniGuardServiceManager is ECDSAServiceManagerBase, IUniGuardServiceMana
 
     uint32 public latestTaskNum;
 
+    error InvalidSignature();
     // mapping of task indices to all tasks hashes
     // when a task is created, task hash is stored here,
     // and responses need to pass the actual task,
@@ -75,7 +76,8 @@ contract UniGuardServiceManager is ECDSAServiceManagerBase, IUniGuardServiceMana
     function respondToTask(
         Task calldata task,
         uint32 referenceTaskIndex,
-        bytes memory signature
+        bytes memory signature,
+        string memory metrics 
     ) external {
         // check that the task is valid, hasn't been responsed yet, and is being responded in time
         require(
@@ -88,11 +90,13 @@ contract UniGuardServiceManager is ECDSAServiceManagerBase, IUniGuardServiceMana
         );
 
         // The message that was signed
-        bytes32 messageHash = keccak256(abi.encodePacked("Hello, ", task.name));
+        bytes32 messageHash = keccak256(
+            abi.encodePacked(metrics, task.name)
+        );
         bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
         bytes4 magicValue = IERC1271Upgradeable.isValidSignature.selector;
         if (!(magicValue == ECDSAStakeRegistry(stakeRegistry).isValidSignature(ethSignedMessageHash,signature))){
-            revert();
+            revert InvalidSignature();
         }
 
         // updating the storage with task responses
