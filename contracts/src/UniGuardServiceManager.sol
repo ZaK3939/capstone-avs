@@ -7,11 +7,13 @@ import {ECDSAStakeRegistry} from "@eigenlayer-middleware/src/unaudited/ECDSAStak
 import {IServiceManager} from "@eigenlayer-middleware/src/interfaces/IServiceManager.sol";
 import {ECDSAUpgradeable} from
     "@openzeppelin-upgrades/contracts/utils/cryptography/ECDSAUpgradeable.sol";
-import {IERC1271Upgradeable} from "@openzeppelin-upgrades/contracts/interfaces/IERC1271Upgradeable.sol";
-import {IUniGuardServiceManager} from "./IUniGuardServiceManager.sol";
+import {IERC1271Upgradeable} from
+    "@openzeppelin-upgrades/contracts/interfaces/IERC1271Upgradeable.sol";
+import {IUniGuardServiceManager} from "./interfaces/IUniGuardServiceManager.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@eigenlayer/contracts/interfaces/IRewardsCoordinator.sol";
-import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {TransparentUpgradeableProxy} from
+    "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 /**
  * @title Primary entrypoint for procuring services from HelloWorld.
@@ -27,6 +29,7 @@ contract UniGuardServiceManager is ECDSAServiceManagerBase, IUniGuardServiceMana
     // when a task is created, task hash is stored here,
     // and responses need to pass the actual task,
     // which is hashed onchain and checked against this mapping
+
     mapping(uint32 => bytes32) public allTaskHashes;
 
     // mapping of task indices to hash of abi.encode(taskResponse, taskResponseMetadata)
@@ -45,21 +48,13 @@ contract UniGuardServiceManager is ECDSAServiceManagerBase, IUniGuardServiceMana
         address _stakeRegistry,
         address _rewardsCoordinator,
         address _delegationManager
-
     )
-        ECDSAServiceManagerBase(
-            _avsDirectory,
-            _stakeRegistry,
-            _rewardsCoordinator,
-            _delegationManager
-        )
+        ECDSAServiceManagerBase(_avsDirectory, _stakeRegistry, _rewardsCoordinator, _delegationManager)
     {}
 
     /* FUNCTIONS */
     // NOTE: this function creates new task, assigns it a taskId
-    function createNewTask(
-        string memory name
-    ) external returns (Task memory) {
+    function createNewTask(string memory name) external returns (Task memory) {
         // create a new task struct
         Task memory newTask;
         newTask.name = name;
@@ -77,7 +72,7 @@ contract UniGuardServiceManager is ECDSAServiceManagerBase, IUniGuardServiceMana
         Task calldata task,
         uint32 referenceTaskIndex,
         bytes memory signature,
-        string memory metrics 
+        string memory metrics
     ) external {
         // check that the task is valid, hasn't been responsed yet, and is being responded in time
         require(
@@ -90,12 +85,17 @@ contract UniGuardServiceManager is ECDSAServiceManagerBase, IUniGuardServiceMana
         );
 
         // The message that was signed
-        bytes32 messageHash = keccak256(
-            abi.encodePacked(metrics, task.name)
-        );
+        bytes32 messageHash = keccak256(abi.encodePacked(metrics, task.name));
         bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
         bytes4 magicValue = IERC1271Upgradeable.isValidSignature.selector;
-        if (!(magicValue == ECDSAStakeRegistry(stakeRegistry).isValidSignature(ethSignedMessageHash,signature))){
+        if (
+            !(
+                magicValue
+                    == ECDSAStakeRegistry(stakeRegistry).isValidSignature(
+                        ethSignedMessageHash, signature
+                    )
+            )
+        ) {
             revert InvalidSignature();
         }
 

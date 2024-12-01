@@ -23,7 +23,7 @@ import {ISignatureUtils} from "@eigenlayer/contracts/interfaces/ISignatureUtils.
 import {AVSDirectory} from "@eigenlayer/contracts/core/AVSDirectory.sol";
 import {IAVSDirectory} from "@eigenlayer/contracts/interfaces/IAVSDirectory.sol";
 import {Test, console2 as console} from "forge-std/Test.sol";
-import {IUniGuardServiceManager} from "../src/IUniGuardServiceManager.sol";
+import {IUniGuardServiceManager} from "../src/interfaces/IUniGuardServiceManager.sol";
 import {ECDSAUpgradeable} from
     "@openzeppelin-upgrades/contracts/utils/cryptography/ECDSAUpgradeable.sol";
 
@@ -69,9 +69,7 @@ contract UniGuardServiceManagerSetup is Test {
         labelContracts(coreDeployment, helloWorldDeployment);
     }
 
-    function addStrategy(
-        address token
-    ) public returns (IStrategy) {
+    function addStrategy(address token) public returns (IStrategy) {
         if (tokenToStrategy[token] != IStrategy(address(0))) {
             return tokenToStrategy[token];
         }
@@ -136,9 +134,7 @@ contract UniGuardServiceManagerSetup is Test {
         return shares;
     }
 
-    function registerAsOperator(
-        Operator memory operator
-    ) internal {
+    function registerAsOperator(Operator memory operator) internal {
         IDelegationManager delegationManager = IDelegationManager(coreDeployment.delegationManager);
 
         IDelegationManager.OperatorDetails memory operatorDetails = IDelegationManager
@@ -152,9 +148,7 @@ contract UniGuardServiceManagerSetup is Test {
         delegationManager.registerAsOperator(operatorDetails, "");
     }
 
-    function registerOperatorToAVS(
-        Operator memory operator
-    ) internal {
+    function registerOperatorToAVS(Operator memory operator) internal {
         ECDSAStakeRegistry stakeRegistry = ECDSAStakeRegistry(helloWorldDeployment.stakeRegistry);
         AVSDirectory avsDirectory = AVSDirectory(coreDeployment.avsDirectory);
 
@@ -175,9 +169,7 @@ contract UniGuardServiceManagerSetup is Test {
         stakeRegistry.registerOperatorWithSignature(operatorSignature, operator.signingKey.addr);
     }
 
-    function deregisterOperatorFromAVS(
-        Operator memory operator
-    ) internal {
+    function deregisterOperatorFromAVS(Operator memory operator) internal {
         ECDSAStakeRegistry stakeRegistry = ECDSAStakeRegistry(helloWorldDeployment.stakeRegistry);
 
         vm.prank(operator.key.addr);
@@ -196,9 +188,7 @@ contract UniGuardServiceManagerSetup is Test {
         return newOperator;
     }
 
-    function updateOperatorWeights(
-        Operator[] memory _operators
-    ) internal {
+    function updateOperatorWeights(Operator[] memory _operators) internal {
         ECDSAStakeRegistry stakeRegistry = ECDSAStakeRegistry(helloWorldDeployment.stakeRegistry);
 
         address[] memory operatorAddresses = new address[](_operators.length);
@@ -251,12 +241,12 @@ contract UniGuardServiceManagerSetup is Test {
 
     function addressToString(address _addr) internal pure returns (string memory) {
         bytes memory s = new bytes(40);
-        for (uint i = 0; i < 20; i++) {
-            bytes1 b = bytes1(uint8(uint(uint160(_addr)) / (2**(8*(19 - i)))));
+        for (uint256 i = 0; i < 20; i++) {
+            bytes1 b = bytes1(uint8(uint256(uint160(_addr)) / (2 ** (8 * (19 - i)))));
             bytes1 hi = bytes1(uint8(b) / 16);
             bytes1 lo = bytes1(uint8(b) - 16 * uint8(hi));
-            s[2*i] = char(hi);
-            s[2*i+1] = char(lo);            
+            s[2 * i] = char(hi);
+            s[2 * i + 1] = char(lo);
         }
         return string(abi.encodePacked("0x", s));
     }
@@ -284,26 +274,34 @@ contract UniGuardServiceManagerSetup is Test {
         }
         return string(buffer);
     }
-    
+
     function respondToTask(
-    Operator memory operator,
-    IUniGuardServiceManager.Task memory task,
-    uint32 referenceTaskIndex
+        Operator memory operator,
+        IUniGuardServiceManager.Task memory task,
+        uint32 referenceTaskIndex
     ) internal {
-        string memory metrics = string(abi.encodePacked(
-            '{',
-            '"hookAddress":"', addressToString(operator.key.addr), '",',
-            '"timestamp":', uint256ToString(block.timestamp), ',',
-            '"gasLimit":500000',
-            '}'
-        ));
+        string memory metrics = string(
+            abi.encodePacked(
+                "{",
+                '"hookAddress":"',
+                addressToString(operator.key.addr),
+                '",',
+                '"timestamp":',
+                uint256ToString(block.timestamp),
+                ",",
+                '"gasLimit":500000',
+                "}"
+            )
+        );
 
         bytes32 messageHash = keccak256(abi.encodePacked(metrics, task.name));
         bytes memory signature = signWithSigningKey(operator, messageHash);
 
-        IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager)
-            .respondToTask(task, referenceTaskIndex, signature, metrics);
-    }}
+        IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager).respondToTask(
+            task, referenceTaskIndex, signature, metrics
+        );
+    }
+}
 
 contract UniGuardServiceManagerInitialization is UniGuardServiceManagerSetup {
     function testInitialization() public view {
@@ -452,19 +450,25 @@ contract RespondToTask is UniGuardServiceManagerSetup {
         IUniGuardServiceManager.Task memory newTask = sm.createNewTask(taskName);
         uint32 taskIndex = sm.latestTaskNum() - 1;
 
-        string memory metrics = string(abi.encodePacked(
-            '{',
-            '"hookAddress":"', addressToString(operators[0].key.addr), '",',
-            '"timestamp":', uint256ToString(block.timestamp), ',',
-            '"gasLimit":500000',
-            '}'
-        ));
+        string memory metrics = string(
+            abi.encodePacked(
+                "{",
+                '"hookAddress":"',
+                addressToString(operators[0].key.addr),
+                '",',
+                '"timestamp":',
+                uint256ToString(block.timestamp),
+                ",",
+                '"gasLimit":500000',
+                "}"
+            )
+        );
 
         bytes32 messageHash = keccak256(abi.encodePacked(metrics, taskName));
         bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
         bytes memory signature = signWithSigningKey(operators[0], ethSignedMessageHash);
 
-        vm.roll(block.number+1);
+        vm.roll(block.number + 1);
         sm.respondToTask(newTask, taskIndex, signature, metrics);
     }
 
