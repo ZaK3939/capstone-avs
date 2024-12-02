@@ -81,7 +81,7 @@ contract UniGuardServiceManager is ECDSAServiceManagerBase, IUniGuardServiceMana
         }
 
         allTaskResponses[msg.sender][referenceTaskIndex] = signature;
-        // hookRegistry.updateRiskScore(hook, riskScore);
+        hookRegistry.updateRiskScore(hook, riskScore);
 
         emit TaskResponded(referenceTaskIndex, task, msg.sender);
     }
