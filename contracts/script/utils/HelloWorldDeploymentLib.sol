@@ -24,7 +24,7 @@ library HelloWorldDeploymentLib {
     Vm internal constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
     struct DeploymentData {
-        address helloWorldServiceManager;
+        address uniGuardServiceManager;
         address stakeRegistry;
         address strategy;
         address token;
@@ -38,29 +38,30 @@ library HelloWorldDeploymentLib {
         DeploymentData memory result;
 
         // First, deploy upgradeable proxy contracts that will point to the implementations.
-        result.helloWorldServiceManager = UpgradeableProxyLib.setUpEmptyProxy(proxyAdmin);
+        result.uniGuardServiceManager = UpgradeableProxyLib.setUpEmptyProxy(proxyAdmin);
         result.stakeRegistry = UpgradeableProxyLib.setUpEmptyProxy(proxyAdmin);
         // Deploy the implementation contracts, using the proxy contracts as inputs
         address stakeRegistryImpl =
             address(new ECDSAStakeRegistry(IDelegationManager(core.delegationManager)));
-        address helloWorldServiceManagerImpl = address(
+        address uniGuardServiceManagerImpl = address(
             new UniGuardServiceManager(
-                core.avsDirectory, result.stakeRegistry, core.rewardsCoordinator, core.delegationManager
+                core.avsDirectory,
+                result.stakeRegistry,
+                core.rewardsCoordinator,
+                core.delegationManager
             )
         );
         // Upgrade contracts
         bytes memory upgradeCall = abi.encodeCall(
-            ECDSAStakeRegistry.initialize, (result.helloWorldServiceManager, 0, quorum)
+            ECDSAStakeRegistry.initialize, (result.uniGuardServiceManager, 0, quorum)
         );
         UpgradeableProxyLib.upgradeAndCall(result.stakeRegistry, stakeRegistryImpl, upgradeCall);
-        UpgradeableProxyLib.upgrade(result.helloWorldServiceManager, helloWorldServiceManagerImpl);
+        UpgradeableProxyLib.upgrade(result.uniGuardServiceManager, uniGuardServiceManagerImpl);
 
         return result;
     }
 
-    function readDeploymentJson(
-        uint256 chainId
-    ) internal returns (DeploymentData memory) {
+    function readDeploymentJson(uint256 chainId) internal returns (DeploymentData memory) {
         return readDeploymentJson("deployments/", chainId);
     }
 
@@ -76,7 +77,7 @@ library HelloWorldDeploymentLib {
 
         DeploymentData memory data;
         /// TODO: 2 Step for reading deployment json.  Read to the core and the AVS data
-        data.helloWorldServiceManager = json.readAddress(".contracts.helloWorldServiceManager");
+        data.uniGuardServiceManager = json.readAddress(".contracts.uniGuardServiceManager");
         data.stakeRegistry = json.readAddress(".contracts.stakeRegistry");
         data.strategy = json.readAddress(".contracts.strategy");
         data.token = json.readAddress(".contracts.token");
@@ -85,9 +86,7 @@ library HelloWorldDeploymentLib {
     }
 
     /// write to default output path
-    function writeDeploymentJson(
-        DeploymentData memory data
-    ) internal {
+    function writeDeploymentJson(DeploymentData memory data) internal {
         writeDeploymentJson("deployments/hello-world/", block.chainid, data);
     }
 
@@ -96,8 +95,7 @@ library HelloWorldDeploymentLib {
         uint256 chainId,
         DeploymentData memory data
     ) internal {
-        address proxyAdmin =
-            address(UpgradeableProxyLib.getProxyAdmin(data.helloWorldServiceManager));
+        address proxyAdmin = address(UpgradeableProxyLib.getProxyAdmin(data.uniGuardServiceManager));
 
         string memory deploymentData = _generateDeploymentJson(data, proxyAdmin);
 
@@ -132,10 +130,10 @@ library HelloWorldDeploymentLib {
         return string.concat(
             '{"proxyAdmin":"',
             proxyAdmin.toHexString(),
-            '","helloWorldServiceManager":"',
-            data.helloWorldServiceManager.toHexString(),
-            '","helloWorldServiceManagerImpl":"',
-            data.helloWorldServiceManager.getImplementation().toHexString(),
+            '","uniGuardServiceManager":"',
+            data.uniGuardServiceManager.toHexString(),
+            '","uniGuardServiceManagerImpl":"',
+            data.uniGuardServiceManager.getImplementation().toHexString(),
             '","stakeRegistry":"',
             data.stakeRegistry.toHexString(),
             '","stakeRegistryImpl":"',
@@ -144,7 +142,7 @@ library HelloWorldDeploymentLib {
             data.strategy.toHexString(),
             '","token":"',
             data.token.toHexString(),
-             '"}'
+            '"}'
         );
     }
 }

@@ -13,7 +13,6 @@ import {TransparentUpgradeableProxy} from
 import {StrategyFactory} from "@eigenlayer/contracts/strategies/StrategyFactory.sol";
 import {StrategyManager} from "@eigenlayer/contracts/core/StrategyManager.sol";
 
-
 import {
     Quorum,
     StrategyParams,
@@ -31,18 +30,18 @@ contract HelloWorldDeployer is Script {
     HelloWorldDeploymentLib.DeploymentData helloWorldDeployment;
     Quorum internal quorum;
     ERC20Mock token;
+
     function setUp() public virtual {
         deployer = vm.rememberKey(vm.envUint("PRIVATE_KEY"));
         vm.label(deployer, "Deployer");
 
         coreDeployment = CoreDeploymentLib.readDeploymentJson("deployments/core/", block.chainid);
-       
-        token = new ERC20Mock();
-        helloWorldStrategy = IStrategy(StrategyFactory(coreDeployment.strategyFactory).deployNewStrategy(token));
 
-        quorum.strategies.push(
-            StrategyParams({strategy: helloWorldStrategy, multiplier: 10_000})
-        );
+        token = new ERC20Mock();
+        helloWorldStrategy =
+            IStrategy(StrategyFactory(coreDeployment.strategyFactory).deployNewStrategy(token));
+
+        quorum.strategies.push(StrategyParams({strategy: helloWorldStrategy, multiplier: 10_000}));
     }
 
     function run() external {
@@ -65,7 +64,7 @@ contract HelloWorldDeployer is Script {
             helloWorldDeployment.stakeRegistry != address(0), "StakeRegistry address cannot be zero"
         );
         require(
-            helloWorldDeployment.helloWorldServiceManager != address(0),
+            helloWorldDeployment.uniGuardServiceManager != address(0),
             "HelloWorldServiceManager address cannot be zero"
         );
         require(helloWorldDeployment.strategy != address(0), "Strategy address cannot be zero");

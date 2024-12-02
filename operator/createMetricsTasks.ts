@@ -19,7 +19,7 @@ const avsDeploymentData = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, `../contracts/deployments/hello-world/${chainId}.json`), 'utf8'),
 );
 
-const serviceManagerAddress = avsDeploymentData.addresses.helloWorldServiceManager;
+const serviceManagerAddress = avsDeploymentData.addresses.uniGuardServiceManager;
 const serviceManagerABI = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, '../abis/UniGuardServiceManager.json'), 'utf8'),
 );

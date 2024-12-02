@@ -38,7 +38,7 @@ console.log('Core Deployment data:', coreDeploymentData);
 // Get contract addresses
 const delegationManagerAddress = coreDeploymentData.addresses.delegation;
 const avsDirectoryAddress = coreDeploymentData.addresses.avsDirectory;
-const serviceManagerAddress = avsDeploymentData.addresses.helloWorldServiceManager;
+const serviceManagerAddress = avsDeploymentData.addresses.uniGuardServiceManager;
 const ecdsaStakeRegistryAddress = avsDeploymentData.addresses.stakeRegistry;
 
 console.log('Contract addresses:', {

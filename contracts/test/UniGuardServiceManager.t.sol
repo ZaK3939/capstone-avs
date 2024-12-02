@@ -93,7 +93,7 @@ contract UniGuardServiceManagerSetup is Test {
         vm.label(coreDeployment.pauserRegistry, "PauserRegistry");
         vm.label(coreDeployment.strategyFactory, "StrategyFactory");
         vm.label(coreDeployment.strategyBeacon, "StrategyBeacon");
-        vm.label(helloWorldDeployment.helloWorldServiceManager, "UniGuardServiceManager");
+        vm.label(helloWorldDeployment.uniGuardServiceManager, "UniGuardServiceManager");
         vm.label(helloWorldDeployment.stakeRegistry, "StakeRegistry");
     }
 
@@ -157,7 +157,7 @@ contract UniGuardServiceManagerSetup is Test {
 
         bytes32 operatorRegistrationDigestHash = avsDirectory
             .calculateOperatorAVSRegistrationDigestHash(
-            operator.key.addr, address(helloWorldDeployment.helloWorldServiceManager), salt, expiry
+            operator.key.addr, address(helloWorldDeployment.uniGuardServiceManager), salt, expiry
         );
 
         bytes memory signature = signWithOperatorKey(operator, operatorRegistrationDigestHash);
@@ -233,7 +233,7 @@ contract UniGuardServiceManagerSetup is Test {
 
     function createTask(TrafficGenerator memory generator, string memory taskName) internal {
         IUniGuardServiceManager helloWorldServiceManager =
-            IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager);
+            IUniGuardServiceManager(helloWorldDeployment.uniGuardServiceManager);
 
         vm.prank(generator.key.addr);
         helloWorldServiceManager.createNewTask(taskName);
@@ -299,7 +299,7 @@ contract UniGuardServiceManagerSetup is Test {
         bytes32 messageHash = keccak256(abi.encodePacked(metrics, task.name, riskScore, hook));
         bytes memory signature = signWithSigningKey(operator, messageHash);
 
-        IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager).respondToTask(
+        IUniGuardServiceManager(helloWorldDeployment.uniGuardServiceManager).respondToTask(
             task, referenceTaskIndex, signature, metrics, riskScore, hook
         );
     }
@@ -320,7 +320,7 @@ contract UniGuardServiceManagerInitialization is UniGuardServiceManagerSetup {
 
         assertTrue(helloWorldDeployment.stakeRegistry != address(0), "StakeRegistry not deployed");
         assertTrue(
-            helloWorldDeployment.helloWorldServiceManager != address(0),
+            helloWorldDeployment.uniGuardServiceManager != address(0),
             "UniGuardServiceManager not deployed"
         );
         assertTrue(coreDeployment.delegationManager != address(0), "DelegationManager not deployed");
@@ -347,7 +347,7 @@ contract RegisterOperator is UniGuardServiceManagerSetup {
         /// Setting to internal state for convenience
         delegationManager = IDelegationManager(coreDeployment.delegationManager);
         avsDirectory = AVSDirectory(coreDeployment.avsDirectory);
-        sm = IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager);
+        sm = IUniGuardServiceManager(helloWorldDeployment.uniGuardServiceManager);
         stakeRegistry = ECDSAStakeRegistry(helloWorldDeployment.stakeRegistry);
 
         addStrategy(address(mockToken));
@@ -399,7 +399,7 @@ contract CreateTask is UniGuardServiceManagerSetup {
 
     function setUp() public override {
         super.setUp();
-        sm = IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager);
+        sm = IUniGuardServiceManager(helloWorldDeployment.uniGuardServiceManager);
     }
 
     function testCreateTask() public {
@@ -427,7 +427,7 @@ contract RespondToTask is UniGuardServiceManagerSetup {
 
         delegationManager = IDelegationManager(coreDeployment.delegationManager);
         avsDirectory = AVSDirectory(coreDeployment.avsDirectory);
-        sm = IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager);
+        sm = IUniGuardServiceManager(helloWorldDeployment.uniGuardServiceManager);
         stakeRegistry = ECDSAStakeRegistry(helloWorldDeployment.stakeRegistry);
 
         addStrategy(address(mockToken));
