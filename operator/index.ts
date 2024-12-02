@@ -1,5 +1,7 @@
 import { ethers } from 'ethers';
 import * as dotenv from 'dotenv';
+import { Address } from 'viem';
+
 const fs = require('fs');
 const path = require('path');
 dotenv.config();
@@ -104,16 +106,27 @@ function parseHookAddressFromTaskName(taskName: string): string {
   if (parts.length < 2) {
     throw new Error(`Invalid task name format: ${taskName}`);
   }
-  return parts[1];
+  // Ensure address is properly formatted with padding
+  return ethers.getAddress(parts[1].padEnd(42, '0'));
 }
 
 const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number, taskName: string) => {
   try {
-    const hookAddress = parseHookAddressFromTaskName(taskName);
+    // const hookAddress = parseHookAddressFromTaskName(taskName);
+    const hookAddress = '0x5037e7747faa78fc0ecf8dfc526dcd19f73076ce' as Address;
+    // check hook address is Address format
+
     const metrics = await collectMetrics(hookAddress);
     const metricsStr = JSON.stringify(metrics);
+    const riskScore = 50;
+    console.log(
+      `metricsStr: ${metricsStr}, taskName: ${taskName},riskScore: ${riskScore}, hookAddress: ${hookAddress}`,
+    );
 
-    const messageHash = ethers.solidityPackedKeccak256(['string', 'string'], [metricsStr, taskName]);
+    const messageHash = ethers.solidityPackedKeccak256(
+      ['string', 'string', 'uint256', 'address'],
+      [metricsStr, taskName, riskScore, hookAddress],
+    );
     const messageBytes = ethers.getBytes(messageHash);
     const signature = await wallet.signMessage(messageBytes);
 
@@ -129,6 +142,8 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
       taskIndex,
       signedTask,
       metricsStr,
+      riskScore,
+      hookAddress,
       { gasLimit: 500000 },
     );
 

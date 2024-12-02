@@ -29,8 +29,9 @@ const serviceManager = new ethers.Contract(serviceManagerAddress, serviceManager
 // メトリクスタスク生成用の関数
 function generateMetricsTaskName(hookAddress: string): string {
   const timestamp = Date.now();
-  const shortAddr = hookAddress.slice(0, 6);
-  return `metrics_${shortAddr}_${timestamp}`;
+  // 完全なアドレス形式を使用する
+  const formattedAddr = ethers.getAddress(hookAddress.padEnd(42, '0'));
+  return `metrics_${formattedAddr}_${timestamp}`;
 }
 
 async function createMetricsTask(hookAddress: string) {

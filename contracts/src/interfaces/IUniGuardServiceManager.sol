@@ -13,23 +13,21 @@ interface IUniGuardServiceManager {
 
     function latestTaskNum() external view returns (uint32);
 
-    function allTaskHashes(
-        uint32 taskIndex
-    ) external view returns (bytes32);
+    function allTaskHashes(uint32 taskIndex) external view returns (bytes32);
 
     function allTaskResponses(
         address operator,
         uint32 taskIndex
     ) external view returns (bytes memory);
 
-    function createNewTask(
-        string memory name
-    ) external returns (Task memory);
+    function createNewTask(string memory name) external returns (Task memory);
 
     function respondToTask(
         Task calldata task,
         uint32 referenceTaskIndex,
         bytes calldata signature,
-        string memory metrics
+        string memory metrics,
+        uint256 riskScore,
+        address hook
     ) external;
 }

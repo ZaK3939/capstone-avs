@@ -278,7 +278,9 @@ contract UniGuardServiceManagerSetup is Test {
     function respondToTask(
         Operator memory operator,
         IUniGuardServiceManager.Task memory task,
-        uint32 referenceTaskIndex
+        uint32 referenceTaskIndex,
+        uint256 riskScore,
+        address hook
     ) internal {
         string memory metrics = string(
             abi.encodePacked(
@@ -294,11 +296,11 @@ contract UniGuardServiceManagerSetup is Test {
             )
         );
 
-        bytes32 messageHash = keccak256(abi.encodePacked(metrics, task.name));
+        bytes32 messageHash = keccak256(abi.encodePacked(metrics, task.name, riskScore, hook));
         bytes memory signature = signWithSigningKey(operator, messageHash);
 
         IUniGuardServiceManager(helloWorldDeployment.helloWorldServiceManager).respondToTask(
-            task, referenceTaskIndex, signature, metrics
+            task, referenceTaskIndex, signature, metrics, riskScore, hook
         );
     }
 }
@@ -446,7 +448,12 @@ contract RespondToTask is UniGuardServiceManagerSetup {
     }
 
     function testRespondToTask() public {
-        string memory taskName = "TestTask";
+        address hook = address(0x1234567890123456789012345678901234567890); // 正しい形式のアドレス
+        string memory taskName = string(
+            abi.encodePacked(
+                "metrics_", addressToString(hook), "_", uint256ToString(block.timestamp)
+            )
+        );
         IUniGuardServiceManager.Task memory newTask = sm.createNewTask(taskName);
         uint32 taskIndex = sm.latestTaskNum() - 1;
 
@@ -463,19 +470,26 @@ contract RespondToTask is UniGuardServiceManagerSetup {
                 "}"
             )
         );
-
-        bytes32 messageHash = keccak256(abi.encodePacked(metrics, taskName));
+        uint256 riskScore = 50;
+        bytes32 messageHash = keccak256(abi.encodePacked(metrics, taskName, riskScore, hook));
         bytes32 ethSignedMessageHash = messageHash.toEthSignedMessageHash();
         bytes memory signature = signWithSigningKey(operators[0], ethSignedMessageHash);
 
         vm.roll(block.number + 1);
-        sm.respondToTask(newTask, taskIndex, signature, metrics);
+        sm.respondToTask(newTask, taskIndex, signature, metrics, riskScore, hook);
     }
 
     function testMetricsInTask() public {
-        string memory taskName = "TestTask";
+        address hook = address(0x1234567890123456789012345678901234567890); // 正しい形式のアドレス
+        string memory taskName = string(
+            abi.encodePacked(
+                "metrics_", addressToString(hook), "_", uint256ToString(block.timestamp)
+            )
+        );
         IUniGuardServiceManager.Task memory newTask = sm.createNewTask(taskName);
         uint32 taskIndex = sm.latestTaskNum() - 1;
-        respondToTask(operators[0], newTask, taskIndex);
+
+        uint256 riskScore = 50;
+        respondToTask(operators[0], newTask, taskIndex, riskScore, hook);
     }
 }

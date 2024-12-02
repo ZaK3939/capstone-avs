@@ -211,6 +211,32 @@
   },
   {
     "type": "function",
+    "name": "hookRegistry",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "contract IHookRegistry"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isHookRegistrySet",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "latestTaskNum",
     "inputs": [],
     "outputs": [
@@ -312,6 +338,16 @@
         "name": "metrics",
         "type": "string",
         "internalType": "string"
+      },
+      {
+        "name": "riskScore",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "hook",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "outputs": [],
@@ -329,6 +365,19 @@
       }
     ],
     "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "setHookRegistry",
+    "inputs": [
+      {
+        "name": "_hookRegistry",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -500,5 +549,10 @@
       }
     ],
     "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "InvalidSignature",
+    "inputs": []
   }
 ]

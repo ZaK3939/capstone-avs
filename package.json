@@ -16,7 +16,8 @@
   },
   "dependencies": {
     "dotenv": "^10.0.0",
-    "ethers": "^6.13.2"
+    "ethers": "^6.13.2",
+    "viem": "^2.21.53"
   },
   "devDependencies": {
     "@types/jest": "^29.5.13",
