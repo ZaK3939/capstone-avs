@@ -11,6 +11,8 @@ interface IUniGuardServiceManager {
         uint32 taskCreatedBlock;
     }
 
+    function setHookRegistry(address _hookRegistry) external;
+
     function latestTaskNum() external view returns (uint32);
 
     function allTaskHashes(uint32 taskIndex) external view returns (bytes32);
