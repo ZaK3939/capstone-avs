@@ -33,9 +33,11 @@ contract UniGuardServiceManager is ECDSAServiceManagerBase, IUniGuardServiceMana
         address _delegationManager
     )
         ECDSAServiceManagerBase(_avsDirectory, _stakeRegistry, _rewardsCoordinator, _delegationManager)
-    {}
+    {
+        transferOwnership(msg.sender);
+    }
 
-    function setHookRegistry(address _hookRegistry) external {
+    function setHookRegistry(address _hookRegistry) external onlyOwner {
         require(!isHookRegistrySet, "HookRegistry already set");
         require(_hookRegistry != address(0), "Invalid HookRegistry address");
         hookRegistry = IHookRegistry(_hookRegistry);
