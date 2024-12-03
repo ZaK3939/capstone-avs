@@ -36,7 +36,6 @@ contract UniGuardServiceManager is ECDSAServiceManagerBase, IUniGuardServiceMana
     {}
 
     function setHookRegistry(address _hookRegistry) external onlyOwner {
-        require(!isHookRegistrySet, "HookRegistry already set");
         require(_hookRegistry != address(0), "Invalid HookRegistry address");
         hookRegistry = IHookRegistry(_hookRegistry);
         isHookRegistrySet = true;
