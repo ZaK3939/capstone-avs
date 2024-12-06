@@ -1,5 +1,8 @@
 ## capstone-avs
 
+This repository is part pf capstone-hackathon.
+pls check operator code and UniGuardServiceManager
+
 ### Start Anvil Chain
 
 In terminal window #1, execute the following commands:
