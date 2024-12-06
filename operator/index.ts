@@ -131,6 +131,7 @@ const signAndRespondToTask = async (taskIndex: number, taskCreatedBlock: number,
     const signature = await wallet.signMessage(messageBytes);
 
     const operators = [await wallet.getAddress()];
+    console.log('Operators:', operators);
     const signatures = [signature];
     const signedTask = ethers.AbiCoder.defaultAbiCoder().encode(
       ['address[]', 'bytes[]', 'uint32'],
